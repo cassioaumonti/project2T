@@ -8,22 +8,103 @@ date: "2022-09-29"
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+```{r}
 
-```{r cars}
-summary(cars)
+# Getting relevant packages and calling the api
+library(jsonlite)
+library(tidyverse)
+
 ```
 
-## Including Plots
+```{r}
 
-You can also embed plots, for example:
+# create the URL for aggregate endpoint
+agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day"){
+  
+  
+  base_endpoint = "https://api.polygon.io/v2/aggs/"
+  
+  last_code = "?adjusted=true&sort=asc&limit=5000"
+  
+  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  
+  mltplr = as.character(mltplr)
+  
+  call = paste0(base_endpoint,"ticker/",stocksTicker,"/range/",mltplr,"/",
+                timespan,"/",from,"/",to,last_code,key)
+  
+  
+  p = fromJSON(call)
+  
+  d1 = as.Date(from)
+  d2 = as.Date(to)
+  d = seq(d1,d2, by ="month")
+  
+  tb = p$results
+  
+  tckr = p$ticker
+  
+  out = tibble(tckr,d,tb)
+  
+  out
+  
+}
+# ex.: crypto
+u=agg_endpoint(stocksTicker = "X:1INCHUSD")
 
-```{r pressure, echo=FALSE}
-plot(pressure)
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r}
+
+# tickers endpoint= get ticker names
+# create the URL for the ticker endpoint - two calls: i) ticker names; and
+# ii) crypto names
+ticker_endpoint = function(ticker="AAPL", market = "stock", limit = 100){
+  
+  if(limit > 1000){
+    limit = 1000
+    message("Warning: the max limit is 1000 for free access!")
+  }
+  
+  base_endpoint = "https://api.polygon.io/v3/reference/tickers?ticker="
+  
+  last_code = "&active=true&sort=ticker&order=asc&limit="
+  
+  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  
+  call = paste0(base_endpoint,ticker,last_code,limit,key)
+  
+  p = fromJSON(call)
+  
+  p$results$name
+  p$results$ticker
+  p$results$type
+
+  
+  
+}
+
+
+# call multiple tickers from agg_endpoint and return a df
+multiple_calls = function(ticker_list){
+  
+  t = ticker_endpoint(ticker_list)
+  
+  agg_endpoint(t)
+  
+  
+}
+
+
+
+
+
+
+
+
+
+```
+
+
