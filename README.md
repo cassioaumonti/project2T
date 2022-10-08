@@ -13,6 +13,15 @@ library(jsonlite)
 library(tidyverse)
 ```
 
+# Key Usage
+
+Defining the keys used due to limited access.
+
+``` r
+key_id = c("foHUdTopBg22FTwv4b11YQsLuZXQkALG",
+           "asWU9di2FThCr1ywIpgyNdqwXMf0fpj4")
+```
+
 # Functions for Calling the API via EndPoints
 
 There are two functions so far, the first pull down the aggregate
@@ -27,10 +36,9 @@ For time data and time EDA
 ``` r
 # create the URL for aggregate endpoint:
 # This function has some default values.
-agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day"){
-  
+agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day", ky, ...){
+
   # passing the components of the URL for the API:
-  
   # base + endpoint 1
   base_endpoint = "https://api.polygon.io/v2/aggs/"
   
@@ -38,7 +46,7 @@ agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-
   last_code = "?adjusted=true&sort=asc&limit=5000"
   
   # key for accessing API
-  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  key = paste0("&apiKey=", key_id[ky])
   
   # converting the multiplier to character
   mltplr = as.character(mltplr)
@@ -66,9 +74,6 @@ agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-
   return(out)
   
 }
-
-# ex.: crypto
-u=agg_endpoint(stocksTicker = "X:1INCHUSD")
 ```
 
 ## Grouped Daily EndPoints
@@ -76,7 +81,7 @@ u=agg_endpoint(stocksTicker = "X:1INCHUSD")
 For merging with the ticker endpoint data set and go to the EDA.
 
 ``` r
-grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true"){
+grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true", ky, ...){
   
   adjusted = tolower(adjusted)
   
@@ -84,7 +89,7 @@ grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true")
   base="https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/"
   
   # key for accessing API
-  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  key = paste0("&apiKey=", key_id[ky])
   
   # creating the URL call
   call = paste0(base,date,"?adjusted=",adjusted,"&include_otc=",otc,key)
@@ -96,8 +101,6 @@ grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true")
   
   return(out)
 }
-
-gout = grouped_endpoint(otc = "true")
 ```
 
 ## Ticker EndPoint
@@ -108,34 +111,60 @@ markets as well as crypto currencies for further analysis of both.
 ``` r
 # tickers endpoint= get ticker names
 # create the URL for the ticker endpoint - two calls: i) ticker names; and
-# ii) crypto names
-ticker_endpoint = function(market = "stocks", limit = 1000){
+# ii) otc names
+ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker = NULL, ky, ...){
   
-  market = tolower(market)
-  
+
   if(limit > 1000){
     limit = 1000
     message("Warning: the max limit is 1000 for free access!")
   }
-  
-  base_endpoint = "https://api.polygon.io/v3/reference/tickers?market="
-  
+
   last_code = "&active=true&sort=locale&order=asc&limit="
   
-  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  key = paste0("&apiKey=", key_id[ky])
+
+    
+  if(!is.null(ticker)){
+    
+      base_endpoint = "https://api.polygon.io/v3/reference/tickers?ticker="
+      
+      call = paste0(base_endpoint,ticker)
+
+  }else{
+    
+      base_endpoint = "https://api.polygon.io/v3/reference/tickers?market="
+      
+      market = tolower(market)
+      
+      call = paste0(base_endpoint,market)
+
+  }
   
-  call = paste0(base_endpoint,market,last_code,limit,key)
+  if(!is.null(type)){
+    
+    type = tolower(type)
+    
+    tp = switch(type,
+               "common stock" = "CS",
+               "investment fund" = "FUND",
+               "exchanged-traded fund" = "ETF",
+               "standard & poors" = "SP",
+                stop("This is not one of the allowed options!"))
+    
+    call = paste0(call, "&type=", tp, last_code, limit, key)
+    
+  }else{
+    
+    call = paste0(call, last_code, limit, key)
+    
+  }
 
   p = fromJSON(call)
   
   return(p$results)
 
 }
-
-#options: crypto, stocks, otc, and fx
-tout = ticker_endpoint(market = "stocks", limit = 1000)
-
-tout2 = ticker_endpoint(market = "otc", limit = 1000)
 ```
 
 ## Wrapper Function
@@ -144,15 +173,61 @@ This function takes information from the previous two functions and
 combine them when it is possible.
 
 ``` r
-# call multiple tickers from agg_endpoint and return a df
-multiple_calls = function(ticker_list){
+# ticker vector to call the API
+tickers = c("AAPL","GOOGL", "MSFT","WY","RYN")
+
+# calling the full name of the companies
+CompanyName = sapply(tickers, function(x){
+  return(ticker_endpoint(ticker = x, ky = 1)$name)
+})
+
+# call multiple tickers from agg_endpoint and return sa df
+agg_data = lapply(tickers, agg_endpoint, ky = 1)
+
+Combining_calls = function(tickerID, ...){
   
-  t = ticker_endpoint(ticker_list)
+  # grouping quantitative EDA data - time analysis
+  time_df = lapply(1:length(agg_data), function(x){
+    
+    return(cbind(Company_Name = CompanyName[x], agg_data[[x]]))
+  })
   
-  agg_endpoint(t)
+  time_df <- do.call("rbind", time_df)
   
+  time_df = as_tibble(time_df)
+  
+  
+  # grouping categorical EDA data
+  tout = ticker_endpoint(market = "stocks", limit = 1000, ky=2)
+
+  tout2 = ticker_endpoint(market = "otc", limit = 1000, ky=2)
+  
+  gout = grouped_endpoint(otc = "true",ky=2)
+
+  df1 = inner_join(tout2, gout, by = c("ticker" = "T"))
+
+  df11= df1 %>%
+  select(ticker, name, market, type, composite_figi,share_class_figi, v:n)
+
+  df2 = inner_join(tout, gout, by = c("ticker" = "T"))
+
+  df22 = df2 %>%
+    select(ticker, name, market, type,composite_figi,share_class_figi, v:n)
+
+  df = rbind(df11, df22)
+
+  df = df %>% drop_na()
+
+  return(list(df = df, time_df = time_df))
   
 }
+
+
+out = Combining_calls(tickerID = tickers)
+
+df = out$df
+
+time_df = out$time_df
 ```
 
 # EDA
@@ -183,7 +258,7 @@ v - The trading volume of the symbol in the given time period.
 
 vw - The volume weighted average price.
 
-ALSO, df contains some information abou the ticker:
+ALSO, df contains some information about the ticker:
 
 active - Whether or not the asset is actively traded. False means the
 asset has been delisted.
@@ -245,20 +320,7 @@ well. For now, the data set below is enough to get all EDA that we need
 for the project.
 
 ``` r
-df1 = inner_join(tout2, gout, by = c("ticker" = "T"))
-
-df11= df1 %>%
-  select(ticker, name, market, type, composite_figi,share_class_figi, v:n)
-
-df2 = inner_join(tout, gout, by = c("ticker" = "T"))
-
-df22 = df2 %>%
-  select(ticker, name, market, type,composite_figi,share_class_figi, v:n)
-
-df = rbind(df11, df22)
-
-df = df %>% drop_na()
-
+# for categorical and numerical EDA
 df
 ```
 
@@ -277,3 +339,23 @@ df
     ## 10 NHMD   NATE'… otc    CS    BBG000… BBG001… 1.89e7 1.46e-3 1.6 e-3 1.4 e-3 1.7 e-3
     ## # … with 861 more rows, 3 more variables: l <dbl>, t <dbl>, n <int>, and
     ## #   abbreviated variable names ¹​composite_figi, ²​share_class_figi
+
+``` r
+# for either categorical, numerical, and timely EDa
+time_df
+```
+
+    ## # A tibble: 65 × 11
+    ##    Company_Name tckr  d               v    vw     o     c     h     l       t      n
+    ##    <chr>        <chr> <date>      <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl>  <int>
+    ##  1 Apple Inc.   AAPL  2021-07-22 1.58e9  147.  146.  148.  152.  143. 1.63e12 1.11e7
+    ##  2 Apple Inc.   AAPL  2021-08-22 1.51e9  151.  148.  146.  157.  146. 1.63e12 1.11e7
+    ##  3 Apple Inc.   AAPL  2021-09-22 1.73e9  143.  144.  149.  149.  138. 1.63e12 1.27e7
+    ##  4 Apple Inc.   AAPL  2021-10-22 1.52e9  151.  149.  158.  159.  146. 1.63e12 1.10e7
+    ##  5 Apple Inc.   AAPL  2021-11-22 2.48e9  169.  158.  171.  182.  156. 1.64e12 1.82e7
+    ##  6 Apple Inc.   AAPL  2021-12-22 1.60e9  175.  168.  173.  183.  167. 1.64e12 1.31e7
+    ##  7 Apple Inc.   AAPL  2022-01-22 2.17e9  168.  172.  173.  177.  155. 1.64e12 1.88e7
+    ##  8 Apple Inc.   AAPL  2022-02-22 2.01e9  161.  171.  164.  172.  150. 1.65e12 1.71e7
+    ##  9 Apple Inc.   AAPL  2022-03-22 1.60e9  172.  164.  165.  180.  163. 1.65e12 1.28e7
+    ## 10 Apple Inc.   AAPL  2022-04-22 2.34e9  156.  164.  149.  172.  139. 1.65e12 2.02e7
+    ## # … with 55 more rows
