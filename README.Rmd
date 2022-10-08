@@ -7,6 +7,9 @@ date: "10-08-2022"
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+## TESTING COMMIT : 2nD PARTNER
+## Retesting -2nd partner 
+
 
 Some packages necessary to run the code
 
