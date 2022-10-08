@@ -1,35 +1,111 @@
-Untitled
+Project 2T
 ================
-Cassio Monti
-2022-09-29
+Cassio Monti Smitali Patnaik
+10-08-2022
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax
-for authoring HTML, PDF, and MS Word documents. For more details on
-using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that
-includes both content as well as the output of any embedded R code
-chunks within the document. You can embed an R code chunk like this:
+Some packages necessary to run the code
 
 ``` r
-summary(cars)
+# Getting relevant packages and calling the api
+library(jsonlite)
+library(tidyverse)
 ```
 
-    ##      speed           dist       
-    ##  Min.   : 4.0   Min.   :  2.00  
-    ##  1st Qu.:12.0   1st Qu.: 26.00  
-    ##  Median :15.0   Median : 36.00  
-    ##  Mean   :15.4   Mean   : 42.98  
-    ##  3rd Qu.:19.0   3rd Qu.: 56.00  
-    ##  Max.   :25.0   Max.   :120.00
+    ## ── Attaching packages ─────────────────────────────────────────── tidyverse 1.3.2 ──
+    ## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
+    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
+    ## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
+    ## ✔ readr   2.1.2      ✔ forcats 0.5.2 
+    ## ── Conflicts ────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## ✖ dplyr::filter()  masks stats::filter()
+    ## ✖ purrr::flatten() masks jsonlite::flatten()
+    ## ✖ dplyr::lag()     masks stats::lag()
 
-## Including Plots
+There are two functions so far, the first pull down the aggregate
+information about the tickers with some metrics. The second function
+pull down the ticker names and some characteristics as location, ticker
+type, and more.
 
-You can also embed plots, for example:
+``` r
+# create the URL for aggregate endpoint
+agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day"){
+  
+  
+  base_endpoint = "https://api.polygon.io/v2/aggs/"
+  
+  last_code = "?adjusted=true&sort=asc&limit=5000"
+  
+  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  
+  mltplr = as.character(mltplr)
+  
+  call = paste0(base_endpoint,"ticker/",stocksTicker,"/range/",mltplr,"/",
+                timespan,"/",from,"/",to,last_code,key)
+  
+  
+  p = fromJSON(call)
+  
+  d1 = as.Date(from)
+  d2 = as.Date(to)
+  d = seq(d1,d2, by ="month")
+  
+  tb = p$results
+  
+  tckr = p$ticker
+  
+  out = tibble(tckr,d,tb)
+  
+  out
+  
+}
+# ex.: crypto
+u=agg_endpoint(stocksTicker = "X:1INCHUSD")
+```
 
-![](README_files/figure-gfm/pressure-1.png)<!-- -->
+This function aims to call tickers from common stock mainly and other
+markets as well as crypto currencies for further analysis of both.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to
-prevent printing of the R code that generated the plot.
+``` r
+# tickers endpoint= get ticker names
+# create the URL for the ticker endpoint - two calls: i) ticker names; and
+# ii) crypto names
+ticker_endpoint = function(ticker="AAPL", market = "stock", limit = 100){
+  
+  if(limit > 1000){
+    limit = 1000
+    message("Warning: the max limit is 1000 for free access!")
+  }
+  
+  base_endpoint = "https://api.polygon.io/v3/reference/tickers?ticker="
+  
+  last_code = "&active=true&sort=ticker&order=asc&limit="
+  
+  key = "&apiKey=asWU9di2FThCr1ywIpgyNdqwXMf0fpj4"
+  
+  call = paste0(base_endpoint,ticker,last_code,limit,key)
+  
+  p = fromJSON(call)
+  
+  p$results$name
+  p$results$ticker
+  p$results$type
+
+  
+  
+}
+```
+
+This function takes information from the previous two functions and
+combine them when it is possible.
+
+``` r
+# call multiple tickers from agg_endpoint and return a df
+multiple_calls = function(ticker_list){
+  
+  t = ticker_endpoint(ticker_list)
+  
+  agg_endpoint(t)
+  
+  
+}
+```

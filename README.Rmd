@@ -1,14 +1,14 @@
 ---
-title: "Untitled"
-author: "Cassio Monti"
-date: "2022-09-29"
+title: "Project 2T"
+author: "Cassio Monti Smitali Patnaik"
+date: "10-08-2022"
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-
+Some packages necessary to run the code
 
 ```{r}
 
@@ -17,6 +17,9 @@ library(jsonlite)
 library(tidyverse)
 
 ```
+
+There are two functions so far, the first pull down the aggregate information about the tickers with some metrics. The second function pull down the ticker names and some characteristics as location, ticker type, and more.
+
 
 ```{r}
 
@@ -56,6 +59,8 @@ u=agg_endpoint(stocksTicker = "X:1INCHUSD")
 
 ```
 
+This function aims to call tickers from common stock mainly and other markets as well as crypto currencies for further analysis of both.
+
 ```{r}
 
 # tickers endpoint= get ticker names
@@ -87,6 +92,12 @@ ticker_endpoint = function(ticker="AAPL", market = "stock", limit = 100){
 }
 
 
+```
+
+This function takes information from the previous two functions and combine them when it is possible.
+
+```{r}
+
 # call multiple tickers from agg_endpoint and return a df
 multiple_calls = function(ticker_list){
   
@@ -96,13 +107,6 @@ multiple_calls = function(ticker_list){
   
   
 }
-
-
-
-
-
-
-
 
 
 ```
