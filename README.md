@@ -3,6 +3,10 @@ Project 2T
 Cassio Monti Smitali Patnaik
 10-08-2022
 
+## TESTING COMMIT : 2nD PARTNER
+
+## Retesting -2nd partner
+
 Some packages necessary to run the code
 
 ``` r
@@ -10,16 +14,6 @@ Some packages necessary to run the code
 library(jsonlite)
 library(tidyverse)
 ```
-
-    ## ── Attaching packages ─────────────────────────────────────────── tidyverse 1.3.2 ──
-    ## ✔ ggplot2 3.3.6      ✔ purrr   0.3.4 
-    ## ✔ tibble  3.1.8      ✔ dplyr   1.0.10
-    ## ✔ tidyr   1.2.1      ✔ stringr 1.4.1 
-    ## ✔ readr   2.1.2      ✔ forcats 0.5.2 
-    ## ── Conflicts ────────────────────────────────────────────── tidyverse_conflicts() ──
-    ## ✖ dplyr::filter()  masks stats::filter()
-    ## ✖ purrr::flatten() masks jsonlite::flatten()
-    ## ✖ dplyr::lag()     masks stats::lag()
 
 There are two functions so far, the first pull down the aggregate
 information about the tickers with some metrics. The second function
