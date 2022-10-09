@@ -232,92 +232,9 @@ time_df = out$time_df
 
 # EDA
 
-starts the EDA here!
+## For several tickers
 
-df object is a tibble, the product of two calls from the API functions
-above. You can use this df object to proceed with the EDA part.
-
-df contains the metrics for prices:
-
-c - The close price for the symbol in the given time period
-
-h - The highest price for the symbol in the given time period.
-
-l - The lowest price for the symbol in the given time period.
-
-n - The number of transactions in the aggregate window.
-
-o - The open price for the symbol in the given time period.
-
-otc - Whether or not this aggregate is for an OTC ticker. This field
-will be left off if false.
-
-t - The Unix Msec timestamp for the start of the aggregate window.
-
-v - The trading volume of the symbol in the given time period.
-
-vw - The volume weighted average price.
-
-ALSO, df contains some information about the ticker:
-
-active - Whether or not the asset is actively traded. False means the
-asset has been delisted.
-
-cik - The CIK number for this ticker. Find more information here.
-
-composite_figi - The composite OpenFIGI number for this ticker. Find
-more information here
-
-currency_name - The name of the currency that this asset is traded with.
-
-delisted_utc - The last date that the asset was traded.
-
-last_updated_utc - The information is accurate up to this time.
-
-locale\*enum \[us, global\] - The locale of the asset.
-
-market\*enum \[stocks, crypto, fx, otc\] - The market type of the asset.
-
-name\*string - The name of the asset. For stocks/equities this will be
-the companies registered name. For crypto/fx this will be the name of
-the currency or coin pair.
-
-primary_exchange - The ISO code of the primary listing exchange for this
-asset.
-
-share_class_figi - The share Class OpenFIGI number for this ticker. Find
-more information here
-
-ticker\*string - The exchange symbol that this item is traded under.
-
-type - The type of the asset. Find the types that we support via our
-Ticker Types API.
-
-You can play around with these variables are you feel like, but we have
-to do some required tasks described on the instructions. I got some
-ideas, maybe they help you get started. I am matching variables in both
-plots.
-
-some ideas: 1 - categorical data analysis: plot and contingency table:
-use variables market and type for categorical analysis (contingency
-table and barplots).
-
-There are composite_figi and share_class_figi variables that can also be
-used as categorical for the EDA categorical analysis, but there are lots
-of them in the data set, so I am not sure if it will be feasible. You
-can check if you want to.
-
-2 - For the quantitative EDA All the metrics for prices are there for a
-single date in time (defined in the default of the grouped function).
-So, here some histograms, boxplots by market or ticker type, or
-something like that. Scatter plots between price and another variable
-that shows good correlation with it, and other required plots following
-the same idea.
-
-I am working on a time data now, it will be multiple calls for different
-tickers and with that we can create some line plots and time analysis as
-well. For now, the data set below is enough to get all EDA that we need
-for the project.
+### Plots for raw data
 
 ``` r
 # for categorical and numerical EDA
@@ -341,21 +258,162 @@ df
     ## #   abbreviated variable names ¹​composite_figi, ²​share_class_figi
 
 ``` r
-# for either categorical, numerical, and timely EDa
-time_df
+table(df$market)
 ```
 
-    ## # A tibble: 65 × 11
-    ##    Company_Name tckr  d               v    vw     o     c     h     l       t      n
-    ##    <chr>        <chr> <date>      <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>   <dbl>  <int>
-    ##  1 Apple Inc.   AAPL  2021-07-22 1.58e9  147.  146.  148.  152.  143. 1.63e12 1.11e7
-    ##  2 Apple Inc.   AAPL  2021-08-22 1.51e9  151.  148.  146.  157.  146. 1.63e12 1.11e7
-    ##  3 Apple Inc.   AAPL  2021-09-22 1.73e9  143.  144.  149.  149.  138. 1.63e12 1.27e7
-    ##  4 Apple Inc.   AAPL  2021-10-22 1.52e9  151.  149.  158.  159.  146. 1.63e12 1.10e7
-    ##  5 Apple Inc.   AAPL  2021-11-22 2.48e9  169.  158.  171.  182.  156. 1.64e12 1.82e7
-    ##  6 Apple Inc.   AAPL  2021-12-22 1.60e9  175.  168.  173.  183.  167. 1.64e12 1.31e7
-    ##  7 Apple Inc.   AAPL  2022-01-22 2.17e9  168.  172.  173.  177.  155. 1.64e12 1.88e7
-    ##  8 Apple Inc.   AAPL  2022-02-22 2.01e9  161.  171.  164.  172.  150. 1.65e12 1.71e7
-    ##  9 Apple Inc.   AAPL  2022-03-22 1.60e9  172.  164.  165.  180.  163. 1.65e12 1.28e7
-    ## 10 Apple Inc.   AAPL  2022-04-22 2.34e9  156.  164.  149.  172.  139. 1.65e12 2.02e7
-    ## # … with 55 more rows
+    ## 
+    ##    otc stocks 
+    ##    193    678
+
+``` r
+table(df$type)
+```
+
+    ## 
+    ## ADRC   CS  ETF  ETN  ETV FUND   OS UNIT 
+    ##   71  470  202    4    5   37   71   11
+
+``` r
+table(df$market, df$type)
+```
+
+    ##         
+    ##          ADRC  CS ETF ETN ETV FUND  OS UNIT
+    ##   otc      44  75   0   0   0    1  71    2
+    ##   stocks   27 395 202   4   5   36   0    9
+
+``` r
+# type vs market
+g = ggplot(df, aes(x = market))
+g + geom_bar(aes(fill = type), position = "dodge")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-207-1.png)<!-- -->
+
+### Plots for modified Data - part 1
+
+``` r
+# quantitative vs market & type
+# group by type and market and average
+df_price = df %>% 
+  group_by(market, type) %>%
+  summarise(avg_price = mean(c), price_range = (h - l))
+
+h = ggplot(df_price, aes(x = avg_price))
+
+# histograms by market type
+h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-1.png)<!-- -->
+
+``` r
+h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-2.png)<!-- -->
+
+``` r
+# histogram + density plot for closed price by market type
+h + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-3.png)<!-- -->
+
+``` r
+h + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-4.png)<!-- -->
+
+``` r
+# boxplot by market and typer for avg price
+h + geom_boxplot(aes(y = market)) + coord_flip()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-5.png)<!-- -->
+
+``` r
+h + geom_boxplot(aes(y = type)) + coord_flip()
+```
+
+![](README_files/figure-gfm/unnamed-chunk-208-6.png)<!-- -->
+
+### Plots for modified Data - part 2
+
+``` r
+# Empirical CDF by market type - price 50% above price avg up to max price
+df_filter_price = df %>%
+  filter(c > 1.5*mean(df$c) & c < max(c))
+
+h1 = ggplot(df_filter_price, aes(x = c))
+h1 + stat_ecdf(geom = "step", aes(color = market)) + ylab("ECDF")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-1.png)<!-- -->
+
+``` r
+h1 + stat_ecdf(geom = "step", aes(color = type)) + ylab("ECDF")
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-2.png)<!-- -->
+
+``` r
+# histograms by market type
+h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-3.png)<!-- -->
+
+``` r
+h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-4.png)<!-- -->
+
+``` r
+# histogram + density plot for closed price by market type
+h1 + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-5.png)<!-- -->
+
+``` r
+h1 + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-6.png)<!-- -->
+
+``` r
+# scatter plot
+h1 + geom_point(aes(y = h)) + facet_wrap(~market)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-7.png)<!-- -->
+
+``` r
+h1 + geom_point(aes(y = h)) + facet_wrap(~type)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-209-8.png)<!-- -->
+
+## For time data
+
+``` r
+# for either categorical, numerical, and timely EDa
+g <- ggplot(time_df, aes(y = c, color = tckr))
+g + geom_line(aes(x = d, color = tckr),lwd = 1.5)
+```
+
+![](README_files/figure-gfm/unnamed-chunk-210-1.png)<!-- -->
+
+``` r
+# scatter plot + curve
+g + geom_point(aes(x = d)) + geom_smooth(method = "gam", aes(x = d))
+```
+
+![](README_files/figure-gfm/unnamed-chunk-210-2.png)<!-- -->
