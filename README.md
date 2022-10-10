@@ -633,8 +633,6 @@ ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+l
 
 ![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
-#### Time_df
-
 Similar , excercise has been implemented for this dataframe as well.
 Where the columns have been renamed to easiliy identify the variables.
 

@@ -426,7 +426,6 @@ df
 The First contingency table states count of pooled investment based on the market for the given ticker data set. And also graphs it in a bar plot. This shows that there were maximum tickers for the stock market for CS and maximum for OTC for OS. It was noted that tickers/companies  with ADRC, CS,OS and UNIT investments had both OTC markets. Rest of tickers had just stock market based investments. 
 
 ```{r fig.width=15,fig.height=5}
-
 tab_cate1<-table(df$type,df$market)
 tab_cate1
 
@@ -479,8 +478,6 @@ The histogram is for looking the frequency of the transactions for each group of
 ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+labs(x="Transactions" ,y= "Count ",title ="Histogram of Number of transactions grouped by Market ")
 
 ```
-
-#### Time_df
 
 Similar , excercise has been implemented for this dataframe as well. Where the columns have been renamed to easiliy identify the variables. 
 
@@ -551,13 +548,12 @@ A bearish crossover occurs when the MACD turns down and crosses below the signal
 The relation between two helps determining if stock can be bought or not.
 
 ```{r fig.width=10,fig.height=5}
+
 macd_df
 
 g <- ggplot(data =macd_df, aes(x=signal,y=value))
 g + geom_point(color="red") + facet_wrap(~Company_Name)+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
 
 ```
-
-
 
 
