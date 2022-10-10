@@ -1,1 +1,45 @@
+title: "test"
+author: "Cassio Monti"
+description: "This blog is a requisite of ST558."
 
+# Email / Social media user names used by the minima theme:
+# All of these are optional and can be removed or commented out
+email: "camonti@ncsu.edu"
+#twitter_username: "twitteruser"
+#github_username: "githubuser"
+#linkedin_username: "https://www.linkedin.com/in/cassioussimonti"
+#facebook_username: username
+#flickr_username: username
+#instagram_username: username
+#pinterest_username: username
+#youtube_username: username
+#googleplus_username: +username
+
+#########################################################################################
+######### Nothing below needs to be changed (unless you know what you're doing) #########
+#########################################################################################
+#theme: "minima"
+#remote_theme: pages-themes/dinky@v0.2.0 # added last update
+remote_theme: pages-themes/cayman@v0.2.0
+
+rss: rss
+
+kramdown:
+  syntax_highlighter_opts:
+    disable: true
+ 
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-remote-theme # added last update
+
+titles_from_headings:
+  strip_title: true
+  collections: true
+
+defaults:
+  - scope:
+      path: ""
+      type: post
+    values:
+      tags: Other
