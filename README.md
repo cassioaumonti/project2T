@@ -3,17 +3,18 @@ Project 2T - Working with Financial Data API
 Cassio Monti & Smitali Patnaik
 10/10/2022
 
+-   <a href="#goal-and-specifications" id="toc-goal-and-specifications">Goal
+    and Specifications</a>
 -   <a href="#required-packages" id="toc-required-packages">Required
     Packages</a>
--   <a href="#key-usage-test-test-test"
-    id="toc-key-usage-test-test-test">Key Usage test test test</a>
--   <a href="#functions-for-calling-the-api-via-endpoints"
-    id="toc-functions-for-calling-the-api-via-endpoints">Functions for
-    Calling the API via EndPoints</a>
+-   <a href="#api-querying-functions" id="toc-api-querying-functions">API
+    Querying Functions</a>
     -   <a href="#aggregate-endpoint" id="toc-aggregate-endpoint">Aggregate
         EndPoint</a>
-    -   <a href="#grouped-daily-endpoints"
-        id="toc-grouped-daily-endpoints">Grouped Daily EndPoints</a>
+    -   <a href="#grouped-daily-endpoint"
+        id="toc-grouped-daily-endpoint">Grouped Daily EndPoint</a>
+    -   <a href="#technical-indicators-endpoint"
+        id="toc-technical-indicators-endpoint">Technical Indicators EndPoint</a>
     -   <a href="#ticker-endpoint" id="toc-ticker-endpoint">Ticker EndPoint</a>
     -   <a href="#wrapper-function" id="toc-wrapper-function">Wrapper
         Function</a>
@@ -30,41 +31,105 @@ Cassio Monti & Smitali Patnaik
             2</a>
     -   <a href="#for-time-data" id="toc-for-time-data">For time data</a>
 
+# Goal and Specifications
+
+The main goal of this vignette is to provide a set of functions that may
+assist in accessing specific information contained in the [Financial
+API](https://polygon.io/docs/stocks). These functions aim to provide
+data sets for further exploratory data analysis (EDA).  
+The companies selected for this analysis belong to two major groups,
+technology and real-state companies of the interest of the authors of
+this vignette. The companies related to the technology group are Apple,
+Microsoft, and Google. The companies related to real-state group are
+Weyerhaeuser and Rayonier, both are timberland investment groups.  
+Four functions were created querying data from 4 end points, or
+searching keywords, present in the the API. Further, three data sets
+were created and the EDA was executed for each of them separately. The
+EDA encompassed categorical and quantitative analyses, numerical and
+graphical, for each data according to their relevance to the
+[objective](#eda) of this analysis.  
+In order for this analysis to happen, some initial contact with the API
+and an access key are required.
+
 # Required Packages
 
-Some packages necessary to run the code
+Some packages are necessary to run the code throughout this vignette.
+They are related to reading and parsing the API format, JSON format, to
+a more friendly and simplified view scheme, rectangular format, through
+the `jsonlite` package. The widely used `tidyverse` for data management,
+specifically using `dplyr`, and for nice correlation plots, `corrplot`.
 
 ``` r
 # Getting relevant packages and calling the api
 library(jsonlite)
 library(tidyverse)
+library(corrplot)
 ```
 
-# Key Usage test test test
+# API Querying Functions
 
-Defining the keys used due to limited access.
+There are four functions that are responsible for querying specific
+information from the mentioned financial API. The first function queries
+data from the *Aggregate endpoint*, which collects mainly price metrics
+for a single ticker over a pre-defined period of time. The second
+function, *Grouped endpoint*, queries prices related metrics for all
+tickers in a particular day. The function *Technical Indicator
+endpoint*, queries information corresponding to the moving average
+convergence/divergence and some other related metrics. The forth, and
+last function, *ticker endpoint*, queries the overall information about
+the tickers, for instance, official names, country of origin, type of
+market, and others.  
+As operating specificity, the *ticker* and *grouped* endpoints are
+working together to unify overall information about the tickers and
+price related metrics in a single data set. Additionally, *ticker* and
+*aggregate* endpoints are working together for the same purpose, but, in
+this case, returning a timely dependent data set.
 
-``` r
-key_id = c("foHUdTopBg22FTwv4b11YQsLuZXQkALG",
-           "asWU9di2FThCr1ywIpgyNdqwXMf0fpj4","NrFY1wYudADe_0JmFFQAVxPFzuhritoB")
-```
-
-# Functions for Calling the API via EndPoints
-
-There are two functions so far, the first pull down the aggregate
-information about the tickers with some metrics. The second function
-pull down the ticker names and some characteristics as location, ticker
-type, and more.
+The function querying the *Technical Indicator endpoint* extracts
+information and??????????????????????
 
 ## Aggregate EndPoint
 
-For time data and time EDA
+This function takes some modifiers defined in the financial API as the
+ticker ID `stocksTicker` (default is Apple’s full name), the time frame
+arguments `from` and `to` (these arguments have default values
+corresponding to one year period from July 22nd 2021 to July 22nd 2022),
+the multiplier is the value associated to the `timespan` argument and
+they both together define the time frame in which the ticker will be
+obtained. For instance, if `timespan` is “minute” and multiplier is 1,
+then the returned data set will be aggregated every 1-minute interval
+across the time selected in `from` and `to` arguments.  
+This function takes all these arguments and pass them to the text format
+through the function `paste0()` associating each element of the URL
+required to form the query that goes to the API. The parts of this URL
+are the `base_endpoint` (provides the initial piece of the URL with the
+endpoint call), `last_code` (provides some other modifiers that are not
+going to be considered in this function), and `key` (provides the key id
+to access the API - since API has a limited free version, more keys are
+necessary to run a more complex query), besides the input arguments,
+which are all required. It is important to notice that this function,
+and the ones that use single input for companies, have the input
+`stocksTicker` as the full name of the listed company, for example,
+“Apple” should be provided instead of “AAPL”. The same for “Microsoft”,
+“Google”, “Weyerhaeuser”, and “Rayonier”. Therefore, it was used the
+function `tolower()` to return the lower case of the company’s name
+associated to the `switch()` function that assigns the specific company
+name to with the ticker symbol. The function is defined below.
 
 ``` r
 # create the URL for aggregate endpoint:
 # This function has some default values.
-agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day", ky, ...){
+agg_endpoint = function(stocksTicker="Apple Inc.", from = "2021-07-22", to = "2022-07-22",mltplr=30, timespan="day", ky, ...){
 
+  # converting the full name into the ticker symbol
+  stocksTicker = switch(tolower(stocksTicker),
+                        "apple" = "AAPL",
+                        "google" = "GOOGL",
+                        "microsoft" = "MSFT",
+                        "weyerhaeuser" = "WY",
+                        "rayonier" = "RYN",
+                        stop("You are allowed to call only a limited number of companies: Apple, GOOGLE, Microsoft, Weyerhaeuser, Rayonier!"))
+  
   # passing the components of the URL for the API:
   # base + endpoint 1
   base_endpoint = "https://api.polygon.io/v2/aggs/"
@@ -103,14 +168,18 @@ agg_endpoint = function(stocksTicker="AAPL", from = "2021-07-22", to = "2022-07-
 }
 ```
 
-## Grouped Daily EndPoints
+## Grouped Daily EndPoint
 
 For merging with the ticker endpoint data set and go to the EDA.
 
 ``` r
+# creates the URL for group endpoint:
+# This function has some default values.
 grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true", ky, ...){
   
+  # this code sets to lower case the arguments adjusted and otc.
   adjusted = tolower(adjusted)
+  otc = tolower(otc)
   
   # base + endpoint 1
   base="https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/"
@@ -124,15 +193,27 @@ grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true",
   # assigning the call to an object
   p = fromJSON(call)
 
+  # transforming the data frame into tibble for better printing
   out = tibble(p$results)
   
   return(out)
 }
 ```
 
+## Technical Indicators EndPoint
+
 ``` r
-macd_endpoint = function(stocksTicker="AAPL", date = "2022-07-22", ky, ..) {
-# base + endpoint 1
+macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
+
+    stocksTicker = switch(tolower(stocksTicker),
+                        "apple" = "AAPL",
+                        "google" = "GOOGL",
+                        "microsoft" = "MSFT",
+                        "weyerhaeuser" = "WY",
+                        "rayonier" = "RYN",
+                         stop("You are allowed to call only a limited number of companies: Apple, GOOGLE, Microsoft, Weyerhaeuser, Rayonier!"))
+
+  # base + endpoint 1
   base="https://api.polygon.io/v1/indicators/macd/"
   
   # key for accessing API
@@ -174,6 +255,15 @@ ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker 
     
   if(!is.null(ticker)){
     
+          ticker = switch(tolower(ticker),
+                        "apple" = "AAPL",
+                        "google" = "GOOGL",
+                        "microsoft" = "MSFT",
+                        "weyerhaeuser" = "WY",
+                        "rayonier" = "RYN",
+                         stop("You are allowed to call only a limited number of companies: Apple, GOOGLE, Microsoft, Weyerhaeuser, Rayonier!"))
+
+    
       base_endpoint = "https://api.polygon.io/v3/reference/tickers?ticker="
       
       call = paste0(base_endpoint,ticker)
@@ -190,9 +280,7 @@ ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker 
   
   if(!is.null(type)){
     
-    type = tolower(type)
-    
-    tp = switch(type,
+    type = switch(tolower(type),
                "common stock" = "CS",
                "investment fund" = "FUND",
                "exchanged-traded fund" = "ETF",
@@ -221,7 +309,8 @@ combine them when it is possible.
 
 ``` r
 # ticker vector to call the API
-tickers = c("AAPL","GOOGL", "MSFT","WY","RYN")
+# tickers = c("AAPL","GOOGL", "MSFT","WY","RYN")
+tickers = c("Apple", "Google", "Microsoft", "Weyerhaeuser", "Rayonier")
 
 # calling the full name of the companies
 CompanyName = sapply(tickers, function(x){
@@ -304,6 +393,12 @@ macd_df
 
 # EDA
 
+The main objective of the EDA presented herein is to analyze data sets
+and extract meaningful information to the user if the reader of this
+vignette was a beginner in investments seeking for starting point upon
+which market and industry type are more interesting in terms of risk and
+return.
+
 ## For several tickers
 
 ### Plots for raw data
@@ -360,7 +455,7 @@ g = ggplot(df, aes(x = market))
 g + geom_bar(aes(fill = type), position = "dodge")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
 
 ### Plots for modified Data - part 1
 
@@ -377,13 +472,13 @@ h = ggplot(df_price, aes(x = avg_price))
 h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
 
 ``` r
 h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-2.png)<!-- -->
 
 ``` r
 # histogram + density plot for closed price by market type
@@ -391,27 +486,27 @@ h + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") +
   geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-3.png)<!-- -->
 
 ``` r
 h + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
   geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-4.png)<!-- -->
 
 ``` r
 # boxplot by market and typer for avg price
 h + geom_boxplot(aes(y = market)) + coord_flip()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-5.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-5.png)<!-- -->
 
 ``` r
 h + geom_boxplot(aes(y = type)) + coord_flip()
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-6.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-6.png)<!-- -->
 
 ### Plots for modified Data - part 2
 
@@ -424,26 +519,26 @@ h1 = ggplot(df_filter_price, aes(x = c))
 h1 + stat_ecdf(geom = "step", aes(color = market)) + ylab("ECDF")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
 ``` r
 h1 + stat_ecdf(geom = "step", aes(color = type)) + ylab("ECDF")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-2.png)<!-- -->
 
 ``` r
 # histograms by market type
 h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-3.png)<!-- -->
 
 ``` r
 h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-4.png)<!-- -->
 
 ``` r
 # histogram + density plot for closed price by market type
@@ -451,27 +546,27 @@ h1 + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") +
   geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-5.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-5.png)<!-- -->
 
 ``` r
 h1 + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
   geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-6.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-6.png)<!-- -->
 
 ``` r
 # scatter plot
 h1 + geom_point(aes(y = h)) + facet_wrap(~market)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-7.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-7.png)<!-- -->
 
 ``` r
 h1 + geom_point(aes(y = h)) + facet_wrap(~type)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-8.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-8.png)<!-- -->
 
 ## For time data
 
@@ -481,14 +576,14 @@ g <- ggplot(time_df, aes(y = c, color = tckr))
 g + geom_line(aes(x = d, color = tckr),lwd = 1.5)
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
 ``` r
 # scatter plot + curve
 g + geom_point(aes(x = d)) + geom_smooth(method = "gam", aes(x = d))
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
 
 \###EXPLORATORY DATA ANALYSIS.
 
@@ -575,7 +670,7 @@ g <- ggplot(data = df, aes(fill=as.factor(market),x=type))
 g + geom_bar( stat = "count",position="dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
 
 ##### Contingency table - II
 
@@ -633,7 +728,7 @@ g <- ggplot(data =df, aes(x=Volume_wt_avg_price,y=Closing_price))
 g + geom_point(color="red") + geom_smooth(method=lm, fullrange=FALSE)+labs(x= "Closing Price", y= "Volume Weighted Price" ,title ="Closing Price  vs Weighted Average Price")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
 
 #### Box Plot for Highest Price based on Investment type
 
@@ -647,7 +742,7 @@ g + geom_boxplot()+ stat_summary(fun = mean,
 lwd = 0.05,aes(group = type))+labs(x="Type" ,y= "Highest price",title ="Boxplot for Spred of Highest Price grouped by Investment Type ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
 The histogram is for looking the frequency of the transactions for each
 group of market for the given time period. The total count of count of
@@ -658,7 +753,7 @@ the plot is skewed to the left.
 ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+labs(x="Transactions" ,y= "Count ",title ="Histogram of Number of transactions grouped by Market ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 Similar , excercise has been implemented for this dataframe as well.
 Where the columns have been renamed to easiliy identify the variables.
@@ -743,7 +838,7 @@ time_df2$Industry <-ifelse(time_df2$tckr=="WY" | time_df2$tckr=="WY" , "Finance"
 ggplot(time_df2, aes(x=as.factor(Date), y=Transactions,fill=Industry))+ geom_bar( stat = "summary", fun.y = "mean")+ facet_wrap(~Industry,  nrow=2 )+guides(x = guide_axis(angle = 90))+ labs(x= "Transactions", y= "Date",title=" Mean Transactions for the time period grouped by Industry type")+scale_fill_discrete(name = "Industry Type ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
 #### Line Plots
 
@@ -757,7 +852,7 @@ to note all technology companies saw peaks in the month of Nov 2021, Jan
 ggplot(time_df2, aes(x = Date, y = Transactions, colour =Company_Name, group = Company_Name)) +geom_line() + geom_point()+labs(x= "Date", y= "Volume Weighted Average Price",title=" Volume weighted price for the time range grouped by Companies")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
 #### Scatter Plot.
 
@@ -770,7 +865,7 @@ g <- ggplot(data =time_df2, aes(x=Transactions,y=Trading_volume,colour=Company_N
 g + geom_point() +labs(x= "Trading Volume", y= "Transactions" ,title ="Trading Volume vs Transactions grouped by Companies")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 
 \####TEST API
 
@@ -805,4 +900,4 @@ g <- ggplot(data =macd_df, aes(x=signal,y=value))
 g + geom_point(color="red") + facet_wrap(~Company_Name)+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
