@@ -1,7 +1,7 @@
 ---
-title: "Project 2T"
+title: "Project 2T - Working with Financial API"
 author: "Cassio Monti & Smitali Patnaik"
-date: "10-08-2022"
+date: "10/10/2022"
 ---
 
 ```{r setup, include=FALSE}

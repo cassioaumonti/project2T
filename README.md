@@ -1,7 +1,33 @@
-Project 2T
+Project 2T - Working with Financial API
 ================
 Cassio Monti & Smitali Patnaik
-10-08-2022
+10/10/2022
+
+-   <a href="#required-packages" id="toc-required-packages">Required
+    Packages</a>
+-   <a href="#key-usage" id="toc-key-usage">Key Usage</a>
+-   <a href="#functions-for-calling-the-api-via-endpoints"
+    id="toc-functions-for-calling-the-api-via-endpoints">Functions for
+    Calling the API via EndPoints</a>
+    -   <a href="#aggregate-endpoint" id="toc-aggregate-endpoint">Aggregate
+        EndPoint</a>
+    -   <a href="#grouped-daily-endpoints"
+        id="toc-grouped-daily-endpoints">Grouped Daily EndPoints</a>
+    -   <a href="#ticker-endpoint" id="toc-ticker-endpoint">Ticker EndPoint</a>
+    -   <a href="#wrapper-function" id="toc-wrapper-function">Wrapper
+        Function</a>
+-   <a href="#eda" id="toc-eda">EDA</a>
+    -   <a href="#for-several-tickers" id="toc-for-several-tickers">For several
+        tickers</a>
+        -   <a href="#plots-for-raw-data" id="toc-plots-for-raw-data">Plots for raw
+            data</a>
+        -   <a href="#plots-for-modified-data---part-1"
+            id="toc-plots-for-modified-data---part-1">Plots for modified Data - part
+            1</a>
+        -   <a href="#plots-for-modified-data---part-2"
+            id="toc-plots-for-modified-data---part-2">Plots for modified Data - part
+            2</a>
+    -   <a href="#for-time-data" id="toc-for-time-data">For time data</a>
 
 # Required Packages
 
