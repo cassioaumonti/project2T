@@ -6,7 +6,7 @@ rmarkdown::render(input = "Monti_Patnaik_project2T_ST558.Rmd",
                     name_value_pairs = "value",
                     or_something = TRUE,
                     toc = TRUE,
-                    df_print = "tibble"
+                    df_print = "kable"
                   ),
                   runtime = "static",
                   clean = TRUE,

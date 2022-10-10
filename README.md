@@ -101,30 +101,39 @@ information and??????????????????????
 ## Aggregate EndPoint
 
 This function takes some modifiers defined in the financial API as the
-ticker ID `stocksTicker` (default is Apple’s full name), the time frame
-arguments `from` and `to` (these arguments have default values
-corresponding to one year period from July 22nd 2021 to July 22nd 2022),
-the multiplier is the value associated to the `timespan` argument and
-they both together define the time frame in which the ticker will be
-obtained. For instance, if `timespan` is “minute” and multiplier is 1,
-then the returned data set will be aggregated every 1-minute interval
-across the time selected in `from` and `to` arguments.  
-This function takes all these arguments and pass them to the text format
-through the function `paste0()` associating each element of the URL
-required to form the query that goes to the API. The parts of this URL
-are the `base_endpoint` (provides the initial piece of the URL with the
-endpoint call), `last_code` (provides some other modifiers that are not
-going to be considered in this function), and `key` (provides the key id
-to access the API - since API has a limited free version, more keys are
-necessary to run a more complex query), besides the input arguments,
-which are all required. It is important to notice that this function,
-and the ones that use single input for companies, have the input
-`stocksTicker` as the full name of the listed company, for example,
-“Apple” should be provided instead of “AAPL”. The same for “Microsoft”,
-“Google”, “Weyerhaeuser”, and “Rayonier”. Therefore, it was used the
-function `tolower()` to return the lower case of the company’s name
-associated to the `switch()` function that assigns the specific company
-name to with the ticker symbol. The function is defined below.
+ticker ID `stocksTicker` (default is “Apple”), the time frame arguments
+`from` and `to` (these arguments have default values corresponding to
+one year period from July 22nd 2021 to July 22nd 2022), the `multiplier`
+(default is 30) is the value associated to the `timespan` (default is
+“day”) argument and they both together define the time frame in which
+the ticker will be obtained. For instance, if `timespan` is “minute” and
+multiplier is 1, then the returned data set will be aggregated every
+1-minute interval across the time frame selected in `from` and `to`
+arguments. Also, `ky` (to define the key ID for the call) is an
+argument.  
+This function takes all these arguments and passes them to the text
+format through the function `paste0()` associating each element of the
+URL required to form the query string that goes to the API. The parts of
+this URL are the `base_endpoint` (provides initial piece of the URL with
+the endpoint call), `last_code` (provides some other modifiers that are
+not going to be considered in this function as arguments), and `key`
+(provides the key ID to access the API - since API has a limited free
+version, more keys are necessary to run a more complex query analysis),
+besides the input arguments which are all required. It is important to
+notice that this function, and the ones that use single input for
+company names, have the input `stocksTicker` as the full name of the
+listed company, for example, “Apple” should be provided instead of
+“AAPL”. The same for “Microsoft”, “Google”, “Weyerhaeuser”, and
+“Rayonier”. Therefore, it was used the function `tolower()` to return
+the lower case of the name of the company to avoid errors due to
+matching. Associated to the latter function, the `switch()` function
+assigns the specific company name to the ticker symbol.  
+The function `fromJSON()` has the URL call as input and returns a
+simplified object that can be stored as a data frame. The arguments
+`from` and `to` are converted into date format and then, through the
+function `as.Date()` and `seq()`, a monthly vector is created and joint
+with the “results” and “ticker”, from the `fromJSON()`, using `tibble()`
+function. The function is defined below.
 
 ``` r
 # create the URL for aggregate endpoint:
@@ -180,17 +189,28 @@ agg_endpoint = function(stocksTicker="Apple Inc.", from = "2021-07-22", to = "20
 
 ## Grouped Daily EndPoint
 
-This end point is related to the
+This end point returns price related metrics for all tickers in a
+particular date. This end point is important to provide data for
+analyzing the frequency of tickers by market type and ticker type
+available in the stock market. The function has some inputs: `date` (a
+specific day for which the user is interested in knowing the prices),
+`otc` (to include OTC securities in the response), the over-the-counter
+securities are used in further analysis. Also, `ky` (to define the key
+ID for the call) is an argument.
 
 ``` r
 # creates the URL for group endpoint:
 # This function has some default values.
-grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true", ky, ...){
+grouped_endpoint = function(date= "2022-07-14", otc = "true", ky, ...){
   
-  # this code sets to lower case the arguments adjusted and otc.
-  adjusted = tolower(adjusted)
+  # this code sets to lower case the arguments otc.
   otc = tolower(otc)
   
+  # check if otc is correctly assigned
+  if(otc != "true" && otc != "false"){
+    stop("Only true or false allowed")
+  }
+
   # base + endpoint 1
   base="https://api.polygon.io/v2/aggs/grouped/locale/us/market/stocks/"
   
@@ -198,7 +218,7 @@ grouped_endpoint = function(date= "2022-07-14", adjusted = "true", otc = "true",
   key = paste0("&apiKey=", key_id[ky])
   
   # creating the URL call
-  call = paste0(base,date,"?adjusted=",adjusted,"&include_otc=",otc,key)
+  call = paste0(base,date,"?adjusted=true&include_otc=",otc,key)
   
   # assigning the call to an object
   p = fromJSON(call)
@@ -364,8 +384,7 @@ Combining_calls = function(tickerID, ...){
 
   df = df %>% drop_na()
   
-  #### macd data
-  
+  # macd data extracting
   macd_data = lapply(tickers, macd_endpoint, ky = 3)
   macd_df = lapply(1:length(macd_data), function(x){
     return(cbind(Company_Name = CompanyName[x], macd_data[[x]]))
@@ -379,35 +398,30 @@ Combining_calls = function(tickerID, ...){
 }
 
 out = Combining_calls(tickerID = tickers)
+
 df = out$df
+
 time_df = out$time_df
 
-macd_df=out$macd_df
-macd_df
+macd_df = out$macd_df
 ```
-
-    ## # A tibble: 50 × 5
-    ##    Company_Name     timestamp  value signal histogram
-    ##    <chr>                <dbl>  <dbl>  <dbl>     <dbl>
-    ##  1 Apple Inc.   1658530800000 0.0313  0.257   -0.226 
-    ##  2 Apple Inc.   1658527200000 0.0752  0.314   -0.238 
-    ##  3 Apple Inc.   1658523600000 0.124   0.373   -0.249 
-    ##  4 Apple Inc.   1658520000000 0.179   0.435   -0.256 
-    ##  5 Apple Inc.   1658516400000 0.221   0.499   -0.279 
-    ##  6 Apple Inc.   1658512800000 0.287   0.569   -0.282 
-    ##  7 Apple Inc.   1658509200000 0.403   0.640   -0.237 
-    ##  8 Apple Inc.   1658505600000 0.523   0.699   -0.176 
-    ##  9 Apple Inc.   1658502000000 0.616   0.743   -0.127 
-    ## 10 Apple Inc.   1658498400000 0.716   0.775   -0.0582
-    ## # … with 40 more rows
 
 # EDA
 
 The main objective of the EDA presented herein is to analyze data sets
-and extract meaningful information to the user if the reader of this
-vignette was a beginner in investments seeking for starting point upon
+and extract meaningful information to the user as if the reader of this
+vignette was a beginner in investments seeking for a starting point upon
 which market and industry type are more interesting in terms of risk and
-return.
+return. We are to compare companies listed in the stock market with
+over-the-counter or off-exchange trading (OTC) securities. These
+companies classified as OTC securities are not listed on a major
+exchange in the United States and are instead traded via a broker-dealer
+network, usually because many are smaller companies and do not meet the
+requirements to be listed on a formal exchange. So, the idea behind this
+analysis is to compare how many OTCs are present in the market in
+relation to stocks. Additionally, technical indicators for moving
+average convergence/divergence and timely data were analyzed for trends
+and patterns.
 
 ## For several tickers
 
