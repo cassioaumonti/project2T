@@ -1,10 +1,10 @@
-title: "test"
-author: "Cassio Monti"
-description: "This blog is a requisite of ST558."
+title: "Project 2T"
+author: "Cassio Monti & Smitali Patnaik"
+description: "The purpose of this vignette is to provide comprehensive way to access financial API and perform EDA."
 
 # Email / Social media user names used by the minima theme:
 # All of these are optional and can be removed or commented out
-email: "camonti@ncsu.edu"
+#email: "camonti@ncsu.edu"
 #twitter_username: "twitteruser"
 #github_username: "githubuser"
 #linkedin_username: "https://www.linkedin.com/in/cassioussimonti"
