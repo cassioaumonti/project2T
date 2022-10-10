@@ -1,11 +1,12 @@
-Project 2T - Working with Financial API
+Project 2T - Working with Financial Data API
 ================
 Cassio Monti & Smitali Patnaik
 10/10/2022
 
 -   <a href="#required-packages" id="toc-required-packages">Required
     Packages</a>
--   <a href="#key-usage" id="toc-key-usage">Key Usage</a>
+-   <a href="#key-usage-test-test-test"
+    id="toc-key-usage-test-test-test">Key Usage test test test</a>
 -   <a href="#functions-for-calling-the-api-via-endpoints"
     id="toc-functions-for-calling-the-api-via-endpoints">Functions for
     Calling the API via EndPoints</a>
@@ -39,7 +40,7 @@ library(jsonlite)
 library(tidyverse)
 ```
 
-# Key Usage
+# Key Usage test test test
 
 Defining the keys used due to limited access.
 

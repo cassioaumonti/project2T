@@ -1,5 +1,5 @@
 ---
-title: "Project 2T - Working with Financial API"
+title: "Project 2T - Working with Financial Data API"
 author: "Cassio Monti & Smitali Patnaik"
 date: "10/10/2022"
 ---
@@ -21,7 +21,7 @@ library(tidyverse)
 ```
 
 
-# Key Usage
+# Key Usage test test test
 
 Defining the keys used due to limited access.
 
