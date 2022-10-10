@@ -18,7 +18,7 @@ The main goal of this vignette is to provide a set of functions that may assist 
 
 # Required Packages
 
-Some packages are necessary to run the code throughout this vignette. They are related to reading and parsing the API format, JSON format, to a more friendly and simplified view scheme, rectangular format, through the `jsonlite` package. The widely used `tidyverse` for data management, specifically using `dplyr`, and for nice correlation plots, `corrplot`.
+Some packages are necessary to run the code throughout this vignette. They are related to reading and parsing the API format, JSON format, to a more friendly and simplified view scheme, rectangular format, through the `jsonlite` package. The widely used `tidyverse` for data management, specifically using `dplyr`, for nice correlation plots, `corrplot`, and for nice table printing, `knitr`.
 
 - [jsonlite](https://cran.r-project.org/web/packages/jsonlite/): Performs the interaction between R and the API that uses the JSON file format.
 
