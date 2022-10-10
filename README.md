@@ -59,12 +59,21 @@ a more friendly and simplified view scheme, rectangular format, through
 the `jsonlite` package. The widely used `tidyverse` for data management,
 specifically using `dplyr`, and for nice correlation plots, `corrplot`.
 
-``` r
-# Getting relevant packages and calling the api
-library(jsonlite)
-library(tidyverse)
-library(corrplot)
-```
+-   [jsonlite](https://cran.r-project.org/web/packages/jsonlite/):
+    Performs the interaction between R and the API that uses the JSON
+    file format.
+
+-   [tidyverse](https://www.tidyverse.org/): This package loads several
+    other packages with several useful functions addressing data
+    management, reshaping, reading, plotting and some more.
+
+-   [corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html):
+    This package has specific functions to display correlations among
+    variables in a data set as intuitive plots.
+
+-   [knitr](https://cran.r-project.org/web/packages/knitr/index.html):
+    provides nice table printing formats, mainly for the contingency
+    tables used herein.
 
 # API Querying Functions
 
@@ -170,7 +179,7 @@ agg_endpoint = function(stocksTicker="Apple Inc.", from = "2021-07-22", to = "20
 
 ## Grouped Daily EndPoint
 
-For merging with the ticker endpoint data set and go to the EDA.
+This end point is related to the
 
 ``` r
 # creates the URL for group endpoint:
