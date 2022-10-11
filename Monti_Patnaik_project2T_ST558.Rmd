@@ -430,7 +430,8 @@ table(df$market, df$type)
 
 # type vs market
 g = ggplot(df, aes(x = market))
-g + geom_bar(aes(fill = type), position = "dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
+g + geom_bar(aes(fill = type), position = "dodge") + 
+  labs(x = "Type of Investment",title="Number of Market Type Available by Ticker Type") + scale_fill_discrete(name = "Ticker Type")
 
 ```
 
@@ -461,7 +462,6 @@ In 1st density plot, Average price and Price range has been derived from the dat
 # quantitative vs market & type
 # group by type and market and average
 
-df
 df_price = df %>% 
   group_by(market, type) %>%
   summarise(avg_price = mean( Closing_price), price_range = (Highest_price - Lowest_price))
@@ -542,6 +542,7 @@ time_df_summary
 The Mean of transactions grouped by Industry type has been shown below as we have 3 technology companies and 2 timberland companies selected for the subplots. This shows again transaction wise Technology companies have a higher trend. In the month of Jan 2022 Technology companies had maximum transactions and timberland companies showing higher numbers in the month of May.
 
 ``` {r fig.width=15,fig.height=5}
+
 time_df2<-time_df%>% mutate(Industry='Technology')
 time_df2$Industry <-ifelse(time_df2$tckr=="WY" | time_df2$tckr=="WY" , "Finance", "Technology")
 
@@ -553,6 +554,7 @@ ggplot(time_df2, aes(x=as.factor(Date), y=Transactions,fill=Industry))+ geom_box
 The Volume weighted price trend has been captured in the below plot for each company. Apple as expected showing highest trends line. It saw lowest numbers in the Jul 2021 and again in Jul 2022. It is interesting to note all technology companies saw peaks in the month of Nov 2021, Jan 2022 and Apr 2022
 
 ``` {r fig.width=15,fig.height=5}
+
 ggplot(time_df2, aes(x = Date, y = Transactions, colour =Company_Name, group = Company_Name)) +geom_line() + geom_point()+labs(x= "Date", y= "Volume Weighted Average Price",title=" Volume weighted price for the time range grouped by Companies")
 
 ```
@@ -577,97 +579,3 @@ g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + 
 
 ```
 
-
-#### BACK UP PLOTS
-```{r fig.width=10,fig.height=5,warning=FALSE, message=FALSE}
-
-# Contingency Plot I
-g <- ggplot(data = df, aes(fill=as.factor(market),x=type))
-g + geom_bar( stat = "count",position="dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
-
-
-#### FROM -----Plots for modified Data - part 1
-
-# histogram + density plot for closed price by market type
-h + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based based on Type")+scale_fill_discrete(name = "Market ")
-
-#
-h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based based on Type")+scale_fill_discrete(name = "Type ")
-
-#### FROM -----Plots for modified Data - part 2
-
-### Plots for modified Data - part 2
-
-# histograms by market type
-h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-# histogram + density plot for closed price by market type
-h1 + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-
-h1 + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-
-# FOR TIME DATA
-
-# for either categorical, numerical, and timely EDa
-g <- ggplot(time_df, aes(y = c, color = tckr))
-g + geom_line(aes(x = d, color = tckr),lwd = 1.5)
-
-# scatter plot + curve
-g + geom_point(aes(x = d)) + geom_smooth(method = "gam", aes(x = d))
-
-#### Box Plot for Highest Price based on Investment type
-
-#For the given day the Range of Highest price based on Investment type are summarized through the bar graphs. #The CS investment type shows an outlier of ~$1100 . The mean is maximum for ETV type.
-
-
-
-g <- ggplot(data = df, aes(x=type,y=Highest_price,fill=type))
-g + geom_boxplot()+ stat_summary(fun = mean,
-lwd = 0.05,aes(group = type))+labs(x="Type" ,y= "Highest price",title ="Boxplot for Spred of Highest Price grouped by Investment Type ")
-
-###### Scatter Plot
-
-#The chart below shows the correlation between the open price and the volume weighted average price. This #chart chart simply establishes the fact that vW or volume weighted price is derived from the closing price, #highest and lowest price. And this is bound to be linear relation for every ticker. The correlation #calculated was 0.999907.
-
-
-correlation<-cor(df$Volume_wt_avg_price,df$Open_price)
-correlation
-
-g <- ggplot(data =df, aes(x=Volume_wt_avg_price,y=Closing_price))
-g + geom_point(color="red") + geom_smooth(method=lm, fullrange=FALSE)+labs(x= "Closing Price", y= "Volume Weighted Price" ,title ="Closing Price  vs Weighted Average Price")
-
-
-#The histogram is for looking the frequency of the transactions for each group of market for the given time #period. The total  count of count of transactions less < 1000 are maximum for both market types. And hence, #the plot is skewed to the left. 
-
-
-
-ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+labs(x="Transactions" ,y= "Count ",title ="Histogram of Number of transactions grouped by Market ")
-
-
-
-#### Scatter Plot. 
-
-#The Volume of trades vs transactions can be looked into to find a relation. We see that for every company the #relation is closely linear. So as the Transactions increase we also see growth in trading volume.
-
-
-g <- ggplot(data =time_df2, aes(x=Transactions,y=Trading_volume,colour=Company_Name))
-g + geom_point() +labs(x= "Trading Volume", y= "Transactions" ,title ="Trading Volume vs Transactions grouped by Companies")
-
-```
-
-
-```
-
-```
-
-```
-
-
-
-```
-```
