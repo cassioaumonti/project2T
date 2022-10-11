@@ -48,11 +48,10 @@ key_id = c("foHUdTopBg22FTwv4b11YQsLuZXQkALG",
 
 # API Querying Functions
 
-There are four functions that are responsible for querying specific information from the mentioned financial API. The first function queries data from the *Aggregate endpoint*, which collects mainly price metrics for a single ticker over a pre-defined period of time. The second function, *Grouped endpoint*, queries prices related metrics for all tickers in a particular day. The function *Technical Indicator endpoint*, queries information corresponding to the moving average convergence/divergence and some other related metrics. The forth, and last function, *ticker endpoint*, queries the overall information about the tickers, for instance, official names, country of origin, type of market, and others.   
+There are four functions that are responsible for querying specific information from the mentioned financial API. The first function queries data from the *Aggregate endpoint*, which collects mainly price metrics for a single ticker over a pre-defined period of time. The second function, *Grouped endpoint*, queries prices related metrics for all tickers in a particular day. The function *Technical Indicator endpoint*, queries information corresponding to the moving average convergence/divergence (macd) and its related metrics. The forth, and last function, *ticker endpoint*, queries the overall information about the tickers, for instance, official names, country of origin, type of market, and others.   
   As operating specificity, the *ticker* and *grouped* endpoints are working together to unify overall information about the tickers and price related metrics in a single data set. Additionally, *ticker* and *aggregate* endpoints are working together for the same purpose, but, in this case, returning a timely dependent data set.
   
-  
-  The function querying the *Technical Indicator endpoint* extracts information and?????????????????????? 
+The function querying the *Technical Indicator endpoint* extracts information for a single ticker and works with *ticker endpoint* to get the historical 'macd' information  with other details included.
 
 ## Aggregate EndPoint
 
@@ -343,106 +342,9 @@ macd_df = out$macd_df
 
 The main objective of the EDA presented herein is to analyze data sets and extract meaningful information to the user as if the reader of this vignette was a beginner in investments seeking for a starting point upon which market and industry type are more interesting in terms of risk and return. We are to compare companies listed in the stock market with over-the-counter or off-exchange trading (OTC) securities. These companies classified as OTC securities are not listed on a major exchange in the United States and are instead traded via a broker-dealer network, usually because many are smaller companies and do not meet the requirements to be listed on a formal exchange. So, the idea behind this analysis is to compare how many OTCs are present in the market in relation to stocks. Additionally, technical indicators for moving average convergence/divergence and timely data were analyzed for trends and patterns.
 
-## For several tickers
+The other aspect of the EDA also explores how prices , transactions, , volume etc relate with one other for the given tickers/companies, that is if any relation or trend can be seen from the historical data or not.
 
-### Plots for raw data
-
-```{r}
-
-# for categorical and numerical EDA
-df
-
-table(df$market)
-
-table(df$type)
-
-table(df$market, df$type)
-
-# type vs market
-g = ggplot(df, aes(x = market))
-g + geom_bar(aes(fill = type), position = "dodge")
-
-```
-
-
-### Plots for modified Data - part 1
-
-```{r}
-# quantitative vs market & type
-# group by type and market and average
-df_price = df %>% 
-  group_by(market, type) %>%
-  summarise(avg_price = mean(c), price_range = (h - l))
-
-h = ggplot(df_price, aes(x = avg_price))
-
-# histograms by market type
-h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-# histogram + density plot for closed price by market type
-h + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-
-h + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-
-# boxplot by market and typer for avg price
-h + geom_boxplot(aes(y = market)) + coord_flip()
-
-h + geom_boxplot(aes(y = type)) + coord_flip()
-
-```
-
-
-
-### Plots for modified Data - part 2
-
-```{r}
-
-# Empirical CDF by market type - price 50% above price avg up to max price
-df_filter_price = df %>%
-  filter(c > 1.5*mean(df$c) & c < max(c))
-
-h1 = ggplot(df_filter_price, aes(x = c))
-h1 + stat_ecdf(geom = "step", aes(color = market)) + ylab("ECDF")
-h1 + stat_ecdf(geom = "step", aes(color = type)) + ylab("ECDF")
-
-# histograms by market type
-h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-# histogram + density plot for closed price by market type
-h1 + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
-
-h1 + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
-
-# scatter plot
-h1 + geom_point(aes(y = h)) + facet_wrap(~market)
-h1 + geom_point(aes(y = h)) + facet_wrap(~type)
-
-```
-
-## For time data
-
-```{r}
-
-# for either categorical, numerical, and timely EDa
-g <- ggplot(time_df, aes(y = c, color = tckr))
-g + geom_line(aes(x = d, color = tckr),lwd = 1.5)
-
-# scatter plot + curve
-g + geom_point(aes(x = d)) + geom_smooth(method = "gam", aes(x = d))
-
-
-```
-
-###EXPLORATORY DATA ANALYSIS.
-
-#### Data Visibility
+## For several tickers data - df
 
 Before proceeding to the detailed EDA of the data sets taken from the APIs, some minor changes have been made to the data frame df. 
 The columns have been renamed as
@@ -458,10 +360,9 @@ vW- Volume_wt_avg_price
 
 Also,the unix time format has been changed to date format.
 
-Typical price is used to determine volume weighted price. Typical price has been derived as sum of the closing price , highest price and lower price.  
+An additional parameter called Typical price is added to the table. This is used to determine volume weighted price. Typical price has been derived as sum of the closing price , highest price and lower price.  
 
 ```{r}
-
 
 df<-df %>% 
   rename(
@@ -483,21 +384,32 @@ df
 
 ``` 
 
-##### Contingency table - I with Bar plots.
+##### Contingency Table to count tickers
 
-The First contingency table states count of pooled investment based on the market for the given ticker data set. And also graphs it in a bar plot. This shows that there were maximum tickers for the stock market for CS and maximum for OTC for OS. It was noted that tickers/companies  with ADRC, CS,OS and UNIT investments had both OTC markets. Rest of tickers had just stock market based investments. 
+The 1st contingency table includes total count of tickers based stocks and otc securities. There are 193 otc based tickers and 678 stock based tickers.
 
-```{r fig.width=15,fig.height=5}
-tab_cate1<-table(df$type,df$market)
-tab_cate1
+The 2nd contingency table includes total count of tickers based on type. Maximum tickers are of CS investment type.
 
-g <- ggplot(data = df, aes(fill=as.factor(market),x=type))
-g + geom_bar( stat = "count",position="dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
+The 3rd contingency table states count of pooled investment based on the market for the given ticker data set. And also graphs it in a bar plot.
+This shows that there were maximum tickers in the stock market for CS and maximum in OTC for OS. It was noted that tickers/companies  with ADRC, CS,OS and UNIT investments had both OTC markets. Rest of tickers had just stock market based investments. 
+
+```{r}
+
+# for categorical and numerical EDA
+df
+table(df$market)
+table(df$type)
+table(df$market, df$type)
+
+# type vs market
+g = ggplot(df, aes(x = market))
+g + geom_bar(aes(fill = type), position = "dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
+
 ```
 
-##### Contingency table - II 
+##### Summary Table for all quantitative variables.
 
-The other contingency table calculates mean of all the quantitative parameters based on two groups- market and type . This uses group_by to group categorical variables and mean of all the quantitative variables are calculated for the subsequent groups. 
+The summary table displays mean of all the quantitative parameters based on two groups- market and type . This uses group_by to group categorical variables and mean of all the quantitative variables are calculated for the subsequent groups. 
  
 The Trading volume was maximum for OTC/CS type tickers followed by Stocks/ETV. The mean volume weighted price is maximum for tickers with maximum price for the given price variables. 
 
@@ -508,40 +420,64 @@ tab_cate2
 
 ```
 
-##### Scatter Plot
+### Modified Data and Related Plots. 
 
-The chart below shows the correlation between the open price and the volume weighted average price. This chart chart simply establishes the fact that vW or volume weighted price is derived from the closing price, highest and lowest price. And this is bound to be linear relation for every ticker. The correlation calculated was 0.999907.
+In 1st density plot, Average price and Price range has been derived from the data and has been used to plot some trends. The count of tickers has has been same in the stock market in terms of  average price.  
 
-```{r fig.width=5,fig.height=5}
-correlation<-cor(df$Volume_wt_avg_price,df$Open_price)
-correlation
+2nd density plot shows average price based on the type of investment. This was seen to be maximum for OS type investment.
 
-g <- ggplot(data =df, aes(x=Volume_wt_avg_price,y=Closing_price))
-g + geom_point(color="red") + geom_smooth(method=lm, fullrange=FALSE)+labs(x= "Closing Price", y= "Volume Weighted Price" ,title ="Closing Price  vs Weighted Average Price")
+3rd plot having a box plot summarizes spread of average price for the two type of markets. OTC markets cover broader price range.
+
+4th Plot or box plot  captures average price in terms of the investment type with ADRC types having broader average price share in the given time period.
+
+```{r fig.width=10,fig.height=5,warning=FALSE, message=FALSE}
+# quantitative vs market & type
+# group by type and market and average
+
+df
+df_price = df %>% 
+  group_by(market, type) %>%
+  summarise(avg_price = mean( Closing_price), price_range = (Highest_price - Lowest_price))
+
+h = ggplot(df_price, aes(x = avg_price))
+
+# histograms by market type
+h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based on Market")+scale_fill_discrete(name = "Market ")
+
+h + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Market", y = "Count/Denstiy",title=" Avg Price based on Market")+scale_fill_discrete(name = "Market ")
+
+
+# box plot by market and type for avg price
+h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Avg price", y = "Type",title=" Avg Price based on Type")+scale_fill_discrete(name = "Market ")
+
+h + geom_boxplot(aes(y = type,fill=type)) +coord_flip()+ labs(x = "Avg Price", y = "Market",title=" Box Plot showing Avg Price based on Market")+scale_fill_discrete(name = "Market ")
 
 ```
 
-#### Box Plot for Highest Price based on Investment type
+An Empirical Cumulative distribution function is set up based  on market where data with closing price is filtered at criteria and range of price is plotted. 
 
-For the given day the Range of Highest price based on Investment type are summarized through the bar graphs. The CS investment type shows an outlier of ~$1100 . The mean is maximum for ETV type.
+The scatter plots summarize the relation between Closing price and Highest price both in terms of market and investment type. In all the cases highest price and closing price have shown linear and string correlation.
 
-```{r fig.width=15,fig.height=5}
+```{r fig.width=10,fig.height=5,warning=FALSE, message=FALSE}
 
-g <- ggplot(data = df, aes(x=type,y=Highest_price,fill=type))
-g + geom_boxplot()+ stat_summary(fun = mean,
-lwd = 0.05,aes(group = type))+labs(x="Type" ,y= "Highest price",title ="Boxplot for Spred of Highest Price grouped by Investment Type ")
+# Empirical CDF by market type - price 50% above price avg up to max price
+df_filter_price = df %>%
+  filter( Closing_price > 1.5*mean(df$ Closing_price) & Closing_price < max( Closing_price))
+
+h1 = ggplot(df_filter_price, aes(x =  Closing_price))
+h1 + stat_ecdf(geom = "step", aes(color = market)) + ylab("ECDF")+labs(title ="ECDF Plot capturing Closing Price based on market")
+h1 + stat_ecdf(geom = "step", aes(color = type)) + ylab("ECDF")+labs(title ="ECDF Plot capturing Closing Price based on type")
+
+# scatter plot
+h1 + geom_point(aes(y = Highest_price)) + facet_wrap(~market) +labs(x= "Highest Price", y= "Closing" ,title ="Closing Price  vs Higest Price grouped by Type")
+
+h1 + geom_point(aes(y = Highest_price)) + facet_wrap(~type)+labs(x= "Highest Price", y= "Closing Price" ,title ="Closing Price  vs Higest Price grouped by Market")
 
 ```
+# Timeseries Data frame- Time_df
 
-The histogram is for looking the frequency of the transactions for each group of market for the given time period. The total  count of count of transactions less < 1000 are maximum for both market types. And hence, the plot is skewed to the left. 
-
-``` {r fig.width=15,fig.height=5}
-
-ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+labs(x="Transactions" ,y= "Count ",title ="Histogram of Number of transactions grouped by Market ")
-
-```
-
-Similar , excercise has been implemented for this dataframe as well. Where the columns have been renamed to easiliy identify the variables. 
+the columns have been renamed to easily identify the variables. 
 
 ```{r}
 
@@ -559,6 +495,8 @@ time_df<-time_df %>%
    )
 
 time_df
+
+
 ```
 
 #### Summary Table
@@ -574,13 +512,13 @@ time_df_summary
 
 ##### Bar Plot with Facet Wrap.
 
-The Mean of transactions grouped by Industry type has been shown below as we have 3 technology companies and 2 timberland companies selected for the subplots. This shows again transaction wise Technology companies have a higher trend. In the month of Jan 2022 Technology companies had maximum transactions with timberland showing higher numbers in the month of April.
+The Mean of transactions grouped by Industry type has been shown below as we have 3 technology companies and 2 timberland companies selected for the subplots. This shows again transaction wise Technology companies have a higher trend. In the month of Jan 2022 Technology companies had maximum transactions and timberland companies showing higher numbers in the month of May.
 
 ``` {r fig.width=15,fig.height=5}
 time_df2<-time_df%>% mutate(Industry='Technology')
 time_df2$Industry <-ifelse(time_df2$tckr=="WY" | time_df2$tckr=="WY" , "Finance", "Technology")
 
-ggplot(time_df2, aes(x=as.factor(Date), y=Transactions,fill=Industry))+ geom_bar( stat = "summary", fun.y = "mean")+ facet_wrap(~Industry,  nrow=2 )+guides(x = guide_axis(angle = 90))+ labs(x= "Transactions", y= "Date",title=" Mean Transactions for the time period grouped by Industry type")+scale_fill_discrete(name = "Industry Type ")
+ggplot(time_df2, aes(x=as.factor(Date), y=Transactions,fill=Industry))+ geom_boxplot()+ facet_wrap(~Industry,  nrow=2,scales = "free" )+guides(x = guide_axis(angle = 90))+ labs(x= "Transactions", y= "Date",title=" Mean Transactions for the time period grouped by Industry type")+scale_fill_discrete(name = "Industry Type ")
 ```
 
 #### Line Plots
@@ -592,30 +530,117 @@ ggplot(time_df2, aes(x = Date, y = Transactions, colour =Company_Name, group = C
 
 ```
 
+##### MACD (Moving Average Convergence/Divergence) - macd_df
+
+This section is just for exploring the concept of technical endpoint of the API stated. Lot of calculations like macd , moving averages etc are used to estimate the trend of the stock and get observations which help in deciding if the given time correct for buying or selling.  
+
+MACD (Moving Average Convergence/Divergence) is an oscillator study and is widely used for assessment of trending characteristics of a given security. It is calculated as the difference between two price averages, and is a indicator that provides a signal line which average of that difference. Interaction of the MACD plot and the signal line often produce valuable signals for trend analysis.
+
+When the MACD plot goes above the signal line, an uptrend may be expected, and, when it goes below, a downtrend can be seen. The difference between the MACD and signal values is plotted as a histogram, which may sometimes give you an early sign that a crossover is about to happen. 
+This relation between two can help in determining if stock/security can be bought or not. The plot shows a trend between the signal and MACD value for various companies keeping histogram as base. Slight interaction between value and signal can be seen in the data at some points. As the data is limited only few points have been captured for companies. For given data crossover trend can clearly be seen for Microsoft and Weyerhaeuser.
+
+```{r fig.width=10,fig.height=5,warning=FALSE, message=FALSE}
+
+macd_df
+
+g <- ggplot(data =macd_df, aes(x=histogram))
+g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
+
+
+
+```
+
+
+#### BACK UP PLOTS
+```{r fig.width=10,fig.height=5,warning=FALSE, message=FALSE}
+
+# Contingency Plot I
+g <- ggplot(data = df, aes(fill=as.factor(market),x=type))
+g + geom_bar( stat = "count",position="dodge")+ labs(x = "Type of Investment", y = "Count",title=" Count of Investments based on Market")+scale_fill_discrete(name = "Market ")
+
+
+#### FROM -----Plots for modified Data - part 1
+
+# histogram + density plot for closed price by market type
+h + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based based on Type")+scale_fill_discrete(name = "Market ")
+
+#
+h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based based on Type")+scale_fill_discrete(name = "Type ")
+
+#### FROM -----Plots for modified Data - part 2
+
+### Plots for modified Data - part 2
+
+# histograms by market type
+h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+h1 + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+
+# histogram + density plot for closed price by market type
+h1 + geom_histogram(aes(fill = market, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))
+
+h1 + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))
+
+
+# FOR TIME DATA
+
+# for either categorical, numerical, and timely EDa
+g <- ggplot(time_df, aes(y = c, color = tckr))
+g + geom_line(aes(x = d, color = tckr),lwd = 1.5)
+
+# scatter plot + curve
+g + geom_point(aes(x = d)) + geom_smooth(method = "gam", aes(x = d))
+
+#### Box Plot for Highest Price based on Investment type
+
+#For the given day the Range of Highest price based on Investment type are summarized through the bar graphs. #The CS investment type shows an outlier of ~$1100 . The mean is maximum for ETV type.
+
+
+
+g <- ggplot(data = df, aes(x=type,y=Highest_price,fill=type))
+g + geom_boxplot()+ stat_summary(fun = mean,
+lwd = 0.05,aes(group = type))+labs(x="Type" ,y= "Highest price",title ="Boxplot for Spred of Highest Price grouped by Investment Type ")
+
+###### Scatter Plot
+
+#The chart below shows the correlation between the open price and the volume weighted average price. This #chart chart simply establishes the fact that vW or volume weighted price is derived from the closing price, #highest and lowest price. And this is bound to be linear relation for every ticker. The correlation #calculated was 0.999907.
+
+
+correlation<-cor(df$Volume_wt_avg_price,df$Open_price)
+correlation
+
+g <- ggplot(data =df, aes(x=Volume_wt_avg_price,y=Closing_price))
+g + geom_point(color="red") + geom_smooth(method=lm, fullrange=FALSE)+labs(x= "Closing Price", y= "Volume Weighted Price" ,title ="Closing Price  vs Weighted Average Price")
+
+
+#The histogram is for looking the frequency of the transactions for each group of market for the given time #period. The total  count of count of transactions less < 1000 are maximum for both market types. And hence, #the plot is skewed to the left. 
+
+
+
+ggplot(df,aes(x=Transactions,fill=market)) + geom_histogram( position="dodge")+labs(x="Transactions" ,y= "Count ",title ="Histogram of Number of transactions grouped by Market ")
+
+
+
 #### Scatter Plot. 
 
-The Volume of trades vs transactions can be looked into to find a relation. We see that for every company the relation is closely linear. So as the Transactions increase we also see growth in trading volume.
+#The Volume of trades vs transactions can be looked into to find a relation. We see that for every company the #relation is closely linear. So as the Transactions increase we also see growth in trading volume.
 
-``` {r fig.width=15,fig.height=5}
+
 g <- ggplot(data =time_df2, aes(x=Transactions,y=Trading_volume,colour=Company_Name))
 g + geom_point() +labs(x= "Trading Volume", y= "Transactions" ,title ="Trading Volume vs Transactions grouped by Companies")
 
 ```
 
-####TEST API
 
-A bullish crossover occurs when the MACD turns up and crosses above the signal line. 
-A bearish crossover occurs when the MACD turns down and crosses below the signal line.
+```
 
-The relation between two helps determining if stock can be bought or not.
-
-```{r fig.width=10,fig.height=5}
-
-macd_df
-
-g <- ggplot(data =macd_df, aes(x=signal,y=value))
-g + geom_point(color="red") + facet_wrap(~Company_Name)+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
+```
 
 ```
 
 
+
+```
+```
