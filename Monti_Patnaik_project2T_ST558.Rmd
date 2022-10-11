@@ -1,7 +1,7 @@
 ---
 title: "Project 2T - Working with Financial Data API"
 author: "Cassio Monti & Smitali Patnaik"
-date: "10/10/2022"
+date: "10/12/2022"
 ---
 
 ```{r setup, include=FALSE}
@@ -116,14 +116,16 @@ agg_endpoint = function(stocksTicker="Apple Inc.", from = "2021-07-22", to = "20
 
 ## Grouped Daily EndPoint
 
-This end point returns price related metrics for all tickers in a particular date. This end point is important to provide data for analyzing the frequency of tickers by market type and ticker type available in the stock market. The function has some inputs: `date` (a specific day for which the user is interested in knowing the prices), `otc` (to include OTC securities in the response), the over-the-counter securities are used in further analysis. Also, `ky` (to define the key ID for the call) is an argument. 
+This end point returns price related metrics for all tickers in a particular date. This end point is important to provide data for analyzing the frequency of tickers by available market type and ticker type. The function has some inputs: `date` (a specific day for which the user is interested in knowing the prices), `otc` (to include OTC securities in the response, other wise no OTC will be added), the over-the-counter securities are used in further analysis. Also, `ky` (to define the key ID for the call) is an argument.   
+  This function begins converting the `otc` argument to lower case through the function `tolower()` for standardizing purpose. Then, a validation step was done on `otc` for unauthorized inputs by using `if-else` statement and a message would come out in case of any unintended input. The next part assembles the pieces of the URL call and uses the functions `paste0()` and `fromJSON()` to extract specific information from the API. The function `tibble()` converts the produced data frame into a tibble and outputs this object.  
+  The argument `date` has a default value corresponding to July 22nd 2022, the same end date defined in the previous function. The function definition is below.
 
 
 ```{r group_endpoint}
 
 # creates the URL for group endpoint:
 # This function has some default values.
-grouped_endpoint = function(date= "2022-07-14", otc = "true", ky, ...){
+grouped_endpoint = function(date= "2022-07-22", otc = "true", ky, ...){
   
   # this code sets to lower case the arguments otc.
   otc = tolower(otc)
@@ -156,13 +158,16 @@ grouped_endpoint = function(date= "2022-07-14", otc = "true", ky, ...){
 
 ## Technical Indicators EndPoint
 
+This function extracts information from the Technical Indicators end point, specifically related to the Moving Average Convergence/Divergence (MACD). This end point gets moving average convergence/divergence (MACD) data for a ticker symbol over a given time range. The function that runs the call for this end point starts returning the lower case of the company name `stocksTicker` and assigning the company name to its specific ticker symbol through the functions `tolower()` and `switch()`. Only the available companies mentioned previously are authorized here as well. Then, the function takes the `date` argument (the same date defined in the previous function was used here as default as well) and assembles the the pieces of the URL call using the function `paste0()` and make the call using  `fromJSON()` function. Then, `tibble()` is used to convert the data frame into a tibble object to be output. The function definition is below.
 
 
 ```{r macd_endpoint}
 
-
+# defining the function.
+# some default arguments.
 macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
 
+   # converting the full name into the ticker symbol
     stocksTicker = switch(tolower(stocksTicker),
                         "apple" = "AAPL",
                         "google" = "GOOGL",
@@ -171,7 +176,7 @@ macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
                         "rayonier" = "RYN",
                          stop("You are allowed to call only a limited number of companies: Apple, GOOGLE, Microsoft, Weyerhaeuser, Rayonier!"))
 
-  # base + endpoint 1
+  # base + endpoint
   base="https://api.polygon.io/v1/indicators/macd/"
   
   # key for accessing API
@@ -183,6 +188,8 @@ macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
   
   # assigning the call to an object
   p = fromJSON(call)
+  
+  # converting the result to a tibble object.
   outd = tibble(p$results$values)
   
   return(outd)
@@ -192,28 +199,34 @@ macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
 
 ## Ticker EndPoint
 
-This function aims to call tickers from common stock mainly and other markets as well as crypto currencies for further analysis of both.
+This function a more complex one in order to give the user more flexibility in relation to the information that can be obtained from the API. The arguments `type` (default NULL) is an option for looking up to specific stock type, in which the allowed values are Common Stock (CS), Investment Fund (FUND), Exchanged-Traded Fund (ETF), and Standard & Poors (SP). These values are converted to lower case (`tolower()`) to standardize the inputs and the function returns an error in case of no concordance with the allowed inputs. The `ticker`(default NULL) is an options for looking up to specific ticker names, the same aforementioned (Google, Microsoft, Weyerhaeuser, Rayonir, and Apple). These arguments are options to the user to get specific information for a particular group of ticker type or company.    
+   The argument `market` (default "stocks") allows the user to choose from "Stocks" and "OTC" options and return all tickers for a particular market type. The mechanics of this function is conditional to the existence of some arguments, for instance, 
+
 
 ```{r ticker_endpoint}
 
-# tickers endpoint= get ticker names
-# create the URL for the ticker endpoint - two calls: i) ticker names; and
-# ii) otc names
+# tickers endpoint= get ticker names and other information
+# create the URL for the ticker endpoint - two calls of market:
+# i) stocks; and
+# ii) otc
 ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker = NULL, ky, ...){
   
-
+  # checking the limit of the call for the free version of the API key.
   if(limit > 1000){
     limit = 1000
     message("Warning: the max limit is 1000 for free access!")
   }
 
+  # assigning the some other components of the URL
   last_code = "&active=true&sort=locale&order=asc&limit="
   
+  # assigning the key component of the URL
   key = paste0("&apiKey=", key_id[ky])
 
-    
+  # checking existence for ticker argument
   if(!is.null(ticker)){
     
+          # converting the full name into the ticker symbol
           ticker = switch(tolower(ticker),
                         "apple" = "AAPL",
                         "google" = "GOOGL",
@@ -222,23 +235,34 @@ ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker 
                         "rayonier" = "RYN",
                          stop("You are allowed to call only a limited number of companies: Apple, GOOGLE, Microsoft, Weyerhaeuser, Rayonier!"))
 
-    
+      # base + endpoint
       base_endpoint = "https://api.polygon.io/v3/reference/tickers?ticker="
       
+      # creating the URL call
       call = paste0(base_endpoint,ticker)
 
   }else{
     
+      # base + endpoint
       base_endpoint = "https://api.polygon.io/v3/reference/tickers?market="
       
+      # converting to lower case
       market = tolower(market)
       
+        # check if market is correctly assigned
+      if(market != "stocks" && market != "otc"){
+          stop("Only true or false allowed for market. Options are: stocks or otc")
+      }
+
+      # creating the URL call
       call = paste0(base_endpoint,market)
 
   }
   
+  # checking for existence of type
   if(!is.null(type)){
     
+    # if type exists, convert the input name to the correct code for the URL
     type = switch(tolower(type),
                "common stock" = "CS",
                "investment fund" = "FUND",
@@ -246,14 +270,17 @@ ticker_endpoint = function(type = NULL, market = "stocks", limit = 1000, ticker 
                "standard & poors" = "SP",
                 stop("This is not one of the allowed options!"))
     
-    call = paste0(call, "&type=", tp, last_code, limit, key)
+    # create the partial call for the URL
+    call = paste0(call, "&type=", type, last_code, limit, key)
     
   }else{
     
+    # in case of type is null, then create an alternative URL call
     call = paste0(call, last_code, limit, key)
     
   }
 
+  # accesses the API
   p = fromJSON(call)
   
   return(p$results)
