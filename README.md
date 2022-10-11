@@ -18,17 +18,37 @@ Cassio Monti & Smitali Patnaik
     -   <a href="#ticker-endpoint" id="toc-ticker-endpoint">Ticker EndPoint</a>
     -   <a href="#wrapper-function" id="toc-wrapper-function">Wrapper
         Function</a>
--   <a href="#eda" id="toc-eda">EDA</a>
+-   <a href="#exploratory-data-analysis"
+    id="toc-exploratory-data-analysis">Exploratory Data Analysis</a>
     -   <a href="#summary-wrapper-function"
         id="toc-summary-wrapper-function">Summary Wrapper Function</a>
-    -   <a href="#for-several-tickers-data---df"
-        id="toc-for-several-tickers-data---df">For several tickers data - df</a>
-        -   <a href="#modified-data-and-related-plots"
-            id="toc-modified-data-and-related-plots">Modified Data and Related
-            Plots.</a>
--   <a href="#timeseries-data-frame--time_df"
-    id="toc-timeseries-data-frame--time_df">Timeseries Data frame-
-    Time_df</a>
+    -   <a href="#analyzing-price-data-by-market-type-and-ticker-type"
+        id="toc-analyzing-price-data-by-market-type-and-ticker-type">Analyzing
+        Price Data by Market Type and Ticker Type</a>
+        -   <a href="#barplot-of-market-type-vs-ticker-type"
+            id="toc-barplot-of-market-type-vs-ticker-type">Barplot of Market Type vs
+            Ticker type</a>
+        -   <a href="#contingency-tables" id="toc-contingency-tables">Contingency
+            Tables</a>
+        -   <a href="#assessing-quantitative-by-levels-of-qualitative-variables"
+            id="toc-assessing-quantitative-by-levels-of-qualitative-variables">Assessing
+            Quantitative by Levels of Qualitative Variables</a>
+    -   <a href="#analyzing-time-series-data"
+        id="toc-analyzing-time-series-data">Analyzing Time Series Data</a>
+        -   <a href="#summary-table" id="toc-summary-table">Summary Table</a>
+        -   <a href="#barplot-of-transactions-by-industry-type"
+            id="toc-barplot-of-transactions-by-industry-type">Barplot of
+            Transactions by Industry Type</a>
+        -   <a href="#line-plots-of-transactions-by-industry-type"
+            id="toc-line-plots-of-transactions-by-industry-type">Line Plots of
+            Transactions by Industry Type</a>
+    -   <a href="#analyzing-macd-data" id="toc-analyzing-macd-data">Analyzing
+        MACD Data</a>
+        -   <a href="#line-plots-of-macd-by-company"
+            id="toc-line-plots-of-macd-by-company">Line Plots of MACD by Company</a>
+        -   <a href="#summary-of-macd-by-company"
+            id="toc-summary-of-macd-by-company">Summary of MACD by Company</a>
+-   <a href="#conclusion" id="toc-conclusion">Conclusion</a>
 
 # Goal and Specifications
 
@@ -56,8 +76,7 @@ Some packages are necessary to run the code throughout this vignette.
 They are related to reading and parsing the API format, JSON format, to
 a more friendly and simplified view scheme, rectangular format, through
 the `jsonlite` package. The widely used `tidyverse` for data management,
-specifically using `dplyr`, for nice correlation plots, `corrplot`, and
-for nice table printing, `knitr`.
+specifically using `dplyr`, and for nice table printing, `knitr`.
 
 -   [jsonlite](https://cran.r-project.org/web/packages/jsonlite/):
     Performs the interaction between R and the API that uses the JSON
@@ -66,10 +85,6 @@ for nice table printing, `knitr`.
 -   [tidyverse](https://www.tidyverse.org/): This package loads several
     other packages with several useful functions addressing data
     management, reshaping, reading, plotting and some more.
-
--   [corrplot](https://cran.r-project.org/web/packages/corrplot/vignettes/corrplot-intro.html):
-    This package has specific functions to display correlations among
-    variables in a data set as intuitive plots.
 
 -   [knitr](https://cran.r-project.org/web/packages/knitr/index.html):
     provides nice table printing formats, mainly for the contingency
@@ -87,7 +102,8 @@ endpoint*, queries information corresponding to the moving average
 convergence/divergence (macd) and its related metrics. The forth, and
 last function, *ticker endpoint*, queries the overall information about
 the tickers, for instance, official names, country of origin, type of
-market, and others.  
+market, and others.
+
 As operating specificity, the *ticker* and *grouped* endpoints are
 working together to unify overall information about the tickers and
 price related metrics in a single data set. Additionally, *ticker* and
@@ -110,7 +126,8 @@ the ticker will be obtained. For instance, if `timespan` is “minute” and
 multiplier is 1, then the returned data set will be aggregated every
 1-minute interval across the time frame selected in `from` and `to`
 arguments. Also, `ky` (to define the key ID for the call) is an
-argument.  
+argument.
+
 This function takes all these arguments and passes them to the text
 format through the function `paste0()` associating each element of the
 URL required to form the query string that goes to the API. The parts of
@@ -127,7 +144,8 @@ listed company, for example, “Apple” should be provided instead of
 “Rayonier”. Therefore, it was used the function `tolower()` to return
 the lower case of the name of the company to avoid errors due to
 matching. Associated to the latter function, the `switch()` function
-assigns the specific company name to the ticker symbol.  
+assigns the specific company name to the ticker symbol.
+
 The function `fromJSON()` has the URL call as input and returns a
 simplified object that can be stored as a data frame. The arguments
 `from` and `to` are converted into date format and then, through the
@@ -196,7 +214,8 @@ type. The function has some inputs: `date` (a specific day for which the
 user is interested in knowing the prices), `otc` (to include OTC
 securities in the response, other wise no OTC will be added), the
 over-the-counter securities are used in further analysis. Also, `ky` (to
-define the key ID for the call) is an argument.  
+define the key ID for the call) is an argument.
+
 This function begins converting the `otc` argument to lower case through
 the function `tolower()` for standardizing purpose. Then, a validation
 step was done on `otc` for unauthorized inputs by using `if-else`
@@ -204,7 +223,8 @@ statement and a message would come out in case of any unintended input.
 The next part assembles the pieces of the URL call and uses the
 functions `paste0()` and `fromJSON()` to extract specific information
 from the API. The function `tibble()` converts the produced data frame
-into a tibble and outputs this object.  
+into a tibble and outputs this object.
+
 The argument `date` has a default value corresponding to July 22nd 2022,
 the same end date defined in the previous function. The function
 definition is below.
@@ -261,7 +281,7 @@ function definition is below.
 ``` r
 # defining the function.
 # some default arguments.
-macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ..) {
+macd_endpoint = function(stocksTicker="Apple", date = "2022-07-22", ky, ...) {
 
    # converting the full name into the ticker symbol
     stocksTicker = switch(tolower(stocksTicker),
@@ -305,7 +325,8 @@ concordance with the allowed inputs. The `ticker`(default NULL) is an
 options for looking up to specific ticker names, the same aforementioned
 (Google, Microsoft, Weyerhaeuser, Rayonir, and Apple). These arguments
 are options to the user to get specific information for a particular
-group of ticker type or company.  
+group of ticker type or company.
+
 The argument `market` (default “stocks”) allows the user to choose from
 “Stocks” and “OTC” options and return all tickers for a particular
 market type. The mechanics of this function is conditional to the
@@ -437,6 +458,19 @@ merge between company name and macd end point, that returns the the
 Moving Average Convergence/Divergence, for further analysis. The
 described wrapper function is defined below.
 
+Before proceeding to the detailed EDA of the data sets taken from the
+APIs, some minor changes have been made to the data frame df. The
+columns have been renamed as:
+
+-   c: Closing_price
+-   h: Highest_price
+-   l: Lowest_price
+-   n: Transactions
+-   o: Open_price
+-   t: Unix_time
+-   v: Trading_volume
+-   vW: Volume_wt_avg_price
+
 ``` r
 # definition of the wrapper function - tickerID = company names for the 
 # analysis. These company names have to be within the previously defined.
@@ -477,14 +511,14 @@ Combining_calls = function(tickerID, ...){
    )
 
   # generating company names for stocks market
-  tout = ticker_endpoint(market = "stocks", limit = 1000, ky=2)
+  tout = ticker_endpoint(market = "stocks", limit = 1000, ky=2,...)
 
   # generating company names for otc market
-  tout2 = ticker_endpoint(market = "otc", limit = 1000, ky=2)
+  tout2 = ticker_endpoint(market = "otc", limit = 1000, ky=2,...)
   
   # # generating price defived data for both stocks and otc market for the
   # default date.
-  gout = grouped_endpoint(otc = "true",ky=2)
+  gout = grouped_endpoint(otc = "true",ky=2,...)
 
   # performing the inner join between otc market info and the price 
   # derived data set
@@ -537,29 +571,45 @@ Combining_calls = function(tickerID, ...){
 }
 ```
 
-# EDA
+# Exploratory Data Analysis
 
 The main objective of the EDA presented herein is to analyze data sets
 and extract meaningful information to the user as if the reader of this
 vignette was a beginner in investments seeking for a starting point upon
-which market and industry type are more interesting in terms of risk and
-return. We are to compare companies listed in the stock market with
-over-the-counter or off-exchange trading (OTC) securities. These
-companies classified as OTC securities are not listed on a major
-exchange in the United States and are instead traded via a broker-dealer
-network, usually because many are smaller companies and do not meet the
-requirements to be listed on a formal exchange. So, the idea behind this
+which market and industry type are more interesting in terms of basic
+analysis of assets availability, their risk, and return. We are to
+compare companies listed in the stock market with over-the-counter or
+off-exchange trading (OTC) securities. These companies classified as OTC
+securities are not listed on a major exchange in the United States and
+are instead traded via a broker-dealer network, usually because many are
+smaller companies that do not meet the requirements to be listed on a
+formal exchange. Sometimes these companies are preferred to investors
+because they may have a good potential to grow. So, the idea behind this
 analysis is to compare how many OTCs are present in the market in
-relation to stocks. Additionally, technical indicators for moving
-average convergence/divergence and timely data were analyzed for trends
-and patterns.
+relation to stocks.
 
-The other aspect of the EDA also explores how prices , transactions, ,
-volume etc relate with one other for the given tickers/companies, that
-is if any relation or trend can be seen from the historical data or not.
+Additionally, technical indicators for moving average
+convergence/divergence and timely data were analyzed for trends and
+patterns for two different types of financial industries, technology and
+real-state, specifically timberland real-state companies. The idea
+behind this comparison is that the technology companies tend to have
+higher price and higher risk because they are more suitable for price
+changes depending on the market. The real-state companies tend to be
+more stable to market disturbs, although they have lower price compared
+to the technology companies. We will show this trend graphically.
 
-The important objects for the remaining of this analysis are created in
-the code below.
+The other aspect of the EDA also explores how prices, transactions
+volume, etc relate with one another for the given tickers/companies,
+that is, whether any relation or trend can be seen from the historical
+data. Some important objects for the remaining of the analysis are
+created in the code below.
+
+It is important to notice that every plot produced by the further code
+uses `ggplot()` function from `tidyverse` associated to `geom_FUN()` and
+some modifiers, also present in the same package. For the contingency
+tables, `table()` function returns the frequency of each level
+considered. For summary tables, the function `kable()`, from `knitr`
+package, was used to perform better looking display.
 
 ``` r
 # ticker vector to call the API
@@ -637,7 +687,22 @@ macd_df
 ## Summary Wrapper Function
 
 This function takes the object returned by the wrapper function and
-produces all the data for the EDA.
+produces all the data required for the next steps of the EDA. Some
+objects are created in this summary function, **df** containing a few
+variables calculated based on other variables, for instance, Typical
+price is added to the table. This is used to determine volume weighted
+price. Typical price has been derived as sum of the closing price,
+highest price, and lower price. The object **tab_cate2** gives the
+averages of some variables by market and ticker type. The object
+**df_price** gives the average price by market and ticker type. The
+object **df_filter_price** gives the observations with prices above the
+average until the maximum price by market and ticker type. The object
+**time_df_summary** gives the averages for all variables of the timely
+data by company.
+
+With these objects and pre-processed variables we can show some graphs
+and analyze some trends in the data sets. The code below shows the
+process of obtaining these objects.
 
 ``` r
 data_management = function(list_data,...){
@@ -664,7 +729,7 @@ data_management = function(list_data,...){
   # creating the table with the averages for all important variables by
   # each level of market and type variables.
   tab_cate2 <-  df%>%
-    select(- c("ticker","name","composite_figi","share_class_figi","Date")) %>%
+    select(- c("ticker","name","composite_figi","share_class_figi","Date","Unix_time")) %>%
     group_by(market,type) %>%
     summarise_all(mean)
   
@@ -672,79 +737,91 @@ data_management = function(list_data,...){
   # all combinations of levels of market and type
   df_price = df %>% 
     group_by(market, type) %>%
-    summarise(avg_price = mean( Closing_price), price_range = (Highest_price - Lowest_price))
+    summarise(avg_price = mean(Closing_price))
   
-  # 
+  # getting data with price above the average until the max price
   df_filter_price = df %>%
     filter( Closing_price > 1.5*mean(df$ Closing_price) & Closing_price < max( Closing_price))
   
+  # summarizing the 
   time_df_summary <- time_df %>% 
-    select(-c( "tckr","Date")) %>% 
+    select(-c( "tckr","Date","Unix_time")) %>% 
     group_by(Company_Name) %>% 
     summarize_all(mean)
   
+  # creating variable to take industry type: tech or real-state
   time_df$Industry <-ifelse(time_df$tckr=="WY" | time_df$tckr=="WY" , "Real-State", "Technology")
   
+  macd_df_avg = macd_df %>%
+    group_by(Company_Name) %>%
+    summarise(avg_timestanp = mean(timestamp), 
+              avg_value = mean(value),
+              avg_signal=mean(signal),
+              avg_histogram=mean(histogram))
   
-  output =   list(df = df, tab_cate2 = tab_cate2, df_price = df_price, df_filter_price = df_filter_price, time_df_summary = time_df_summary, time_df = time_df)
+  
+  # output list
+  output =   list(df = df, tab_cate2 = tab_cate2, df_price = df_price, df_filter_price = df_filter_price, time_df_summary = time_df_summary, time_df = time_df, macd_df_avg = macd_df_avg)
   
   return(output)
   
 }
+```
 
+## Analyzing Price Data by Market Type and Ticker Type
 
+The code below compiles the data management function and assigns all
+objects and modifications to the object **output**, which is a list of
+data frames. Then, this list will be accessed every time a particular
+data frame should be used in a plot or table.
+
+``` r
 output = data_management(list_data = out)
 ```
 
-## For several tickers data - df
+### Barplot of Market Type vs Ticker type
 
-Before proceeding to the detailed EDA of the data sets taken from the
-APIs, some minor changes have been made to the data frame df. The
-columns have been renamed as
+The first step to understand investment analysis and effectively put
+your money on some papers is to know some aspects of the market as the
+available papers. So, the following plot shows the number of ticker type
+available in each market type for the investment plan. The function
+`ggplot()` was used here and some `geom_bar()` are giving the detailed
+oriented plot we see below, by ticker type and market type, having the
+`stat= count` as default statistic.
 
-c - Closing_price h - Highest_price l - Lowest_price n - Transactions
-o - Open_price t - Unix_time v- Trading_volume vW- Volume_wt_avg_price
-
-Also,the unix time format has been changed to date format.
-
-An additional parameter called Typical price is added to the table. This
-is used to determine volume weighted price. Typical price has been
-derived as sum of the closing price , highest price and lower price.
+There is a clear trend in this plot, Common Stocks (CS) and ETFs are the
+most frequent in the stock market and OS, ADRC, and CS are the most
+common on the OTC market. These papers give an idea of where the the
+investors might be allocating their money on.
 
 ``` r
-  # df<-df %>% 
-  #   rename(
-  #     Closing_price=c,
-  #     Highest_price=h,
-  #     Lowest_price=l, 
-  #     Transactions=n,
-  #     Open_price=o, 
-  #     Unix_time=t,
-  #     Trading_volume=v,
-  #     Volume_wt_avg_price=vw
-  #   )
-  # 
-  # df<- df %>% mutate(Date= as.POSIXct(df$Unix_time/1000,origin = "1970-01-01"))
-  # df$Date<-as.Date(df$Date)
-  # 
-  # df<- df %>% mutate(Sum_Typical_price= (Closing_price+Highest_price+Lowest_price)/3)
+# type vs market
+g = ggplot(output$df, aes(x = market))
+g + geom_bar(aes(fill = type), position = "dodge") + 
+  labs(x = "Market Type", title="Number of Market Types Available by Ticker Types") + scale_fill_discrete(name = "Ticker Type")
 ```
 
-##### Contingency Table to count tickers
+![](README_files/figure-gfm/df-1.png)<!-- -->
 
-The 1st contingency table includes total count of tickers based stocks
-and otc securities. There are 193 otc based tickers and 678 stock based
-tickers.
+### Contingency Tables
 
-The 2nd contingency table includes total count of tickers based on type.
-Maximum tickers are of CS investment type.
+We made three contingency tables for this analysis, the first
+contingency table includes total count of tickers based stocks and otc
+securities. There are 190 otc based tickers and 683 stock based tickers.
+The second contingency table includes total count of tickers based on
+ticker type. There are 8 most common ticker types and the maximum
+tickers are of CS investment type, with 466 papers. The third
+contingency table states count of pooled investment based on the market
+for the given ticker type. The most common is ticker type CS belonging
+to market Stocks and for the OTC market, the most common ticker type is
+OS. This trend will be observed in the next graph as well, but with the
+tables displayed below, it is easier to see the differences among the
+groups.
 
-The 3rd contingency table states count of pooled investment based on the
-market for the given ticker data set. And also graphs it in a bar plot.
 This shows that there were maximum tickers in the stock market for CS
 and maximum in OTC for OS. It was noted that tickers/companies with
-ADRC, CS,OS and UNIT investments had both OTC markets. Rest of tickers
-had just stock market based investments.
+ADRC, CS,OS and UNIT investments had both OTC markets. The remaining of
+ticker types occured just in stock market based investments.
 
 ``` r
 # for categorical and numerical EDA
@@ -782,227 +859,205 @@ kable(table(output$df$market, output$df$type), caption = "Contingency Table of M
 
 Contingency Table of Market Type by Ticker Type
 
-``` r
-# type vs market
-g = ggplot(output$df, aes(x = market))
-g + geom_bar(aes(fill = type), position = "dodge") + 
-  labs(x = "Type of Investment", title="Number of Market Type Available by Ticker Type") + scale_fill_discrete(name = "Ticker Type")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
-
-##### Summary Table for all quantitative variables.
+### Assessing Quantitative by Levels of Qualitative Variables
 
 The summary table displays mean of all the quantitative parameters based
-on two groups- market and type . This uses group_by to group categorical
-variables and mean of all the quantitative variables are calculated for
-the subsequent groups.
+on two groups- market and type. This uses `group_by()` to group
+categorical variables and the `mean()` of all the quantitative variables
+are calculated for the subsequent groups. These function were used in
+the `data_management()` function.
 
 The Trading volume was maximum for OTC/CS type tickers followed by
-Stocks/ETV. The mean volume weighted price is maximum for tickers with
-maximum price for the given price variables.
+Stocks/ETV. Trading volume is the total number of shares or contracts
+exchanged between buyers and sellers of a security during trading hours
+on a given day. This means that the ticker type and market type with
+higher trading volume are most aimed in that particular day and,
+therefore, they are most likely to give interesting returns to the
+investor. The mean volume weighted price is maximum for tickers with
+higher prices considering opening and closing prices. This corroborates
+with the statement above.
 
 ``` r
 kable(output$tab_cate2)
 ```
 
-| market | type | Trading_volume | Volume_wt_avg_price | Open_price | Closing_price | Highest_price | Lowest_price |   Unix_time | Transactions | Sum_Typical_price |
-|:-------|:-----|---------------:|--------------------:|-----------:|--------------:|--------------:|-------------:|------------:|-------------:|------------------:|
-| otc    | ADRC |     104332.227 |           25.319275 |  25.456620 |     25.221296 |     25.595718 |    25.101807 | 1.65852e+12 |    176.97727 |         25.306273 |
-| otc    | CS   |   23779311.378 |            4.738820 |   4.740364 |      4.732953 |      4.751451 |     4.721854 | 1.65852e+12 |    181.68919 |          4.735419 |
-| otc    | OS   |      31769.329 |            1.775972 |   1.785386 |      1.753709 |      1.801946 |     1.740986 | 1.65852e+12 |     12.71429 |          1.765547 |
-| otc    | UNIT |      12464.000 |            5.972900 |   6.000000 |      5.974000 |      6.010000 |     5.954000 | 1.65852e+12 |     23.50000 |          5.979333 |
-| stocks | ADRC |    1071487.714 |           21.934853 |  22.135546 |     21.792646 |     22.401757 |    21.625571 | 1.65852e+12 |   6383.03571 |         21.939992 |
-| stocks | CS   |    1327825.402 |           42.842359 |  43.212892 |     42.777576 |     43.749069 |    42.264742 | 1.65852e+12 |  11336.96939 |         42.930462 |
-| stocks | ETF  |     974294.776 |           39.763325 |  39.941929 |     39.664408 |     40.079720 |    39.474093 | 1.65852e+12 |   3476.44878 |         39.739407 |
-| stocks | ETN  |      12649.800 |           33.249500 |  33.221100 |     32.975140 |     33.728000 |    32.844040 | 1.65852e+12 |     61.80000 |         33.182393 |
-| stocks | ETV  |    1571428.333 |           42.923583 |  42.481050 |     42.914467 |     43.784433 |    42.266550 | 1.65852e+12 |   7638.00000 |         42.988483 |
-| stocks | FUND |      75510.029 |           12.325657 |  12.367143 |     12.294714 |     12.450237 |    12.233200 | 1.65852e+12 |    354.54286 |         12.326050 |
-| stocks | UNIT |       2996.083 |            9.923975 |   9.929167 |      9.917083 |      9.931250 |     9.915000 | 1.65852e+12 |     11.66667 |          9.921111 |
+| market | type | Trading_volume | Volume_wt_avg_price | Open_price | Closing_price | Highest_price | Lowest_price | Transactions | Sum_Typical_price |
+|:-------|:-----|---------------:|--------------------:|-----------:|--------------:|--------------:|-------------:|-------------:|------------------:|
+| otc    | ADRC |     104332.227 |           25.319275 |  25.456620 |     25.221296 |     25.595718 |    25.101807 |    176.97727 |         25.306273 |
+| otc    | CS   |   23779311.378 |            4.738820 |   4.740364 |      4.732953 |      4.751451 |     4.721854 |    181.68919 |          4.735419 |
+| otc    | OS   |      31769.329 |            1.775972 |   1.785386 |      1.753709 |      1.801946 |     1.740986 |     12.71429 |          1.765547 |
+| otc    | UNIT |      12464.000 |            5.972900 |   6.000000 |      5.974000 |      6.010000 |     5.954000 |     23.50000 |          5.979333 |
+| stocks | ADRC |    1071487.714 |           21.934853 |  22.135546 |     21.792646 |     22.401757 |    21.625571 |   6383.03571 |         21.939992 |
+| stocks | CS   |    1327825.402 |           42.842359 |  43.212892 |     42.777576 |     43.749069 |    42.264742 |  11336.96939 |         42.930462 |
+| stocks | ETF  |     974294.776 |           39.763325 |  39.941929 |     39.664408 |     40.079720 |    39.474093 |   3476.44878 |         39.739407 |
+| stocks | ETN  |      12649.800 |           33.249500 |  33.221100 |     32.975140 |     33.728000 |    32.844040 |     61.80000 |         33.182393 |
+| stocks | ETV  |    1571428.333 |           42.923583 |  42.481050 |     42.914467 |     43.784433 |    42.266550 |   7638.00000 |         42.988483 |
+| stocks | FUND |      75510.029 |           12.325657 |  12.367143 |     12.294714 |     12.450237 |    12.233200 |    354.54286 |         12.326050 |
+| stocks | UNIT |       2996.083 |            9.923975 |   9.929167 |      9.917083 |      9.931250 |     9.915000 |     11.66667 |          9.921111 |
 
-``` r
-# df_summary<-df%>% select(- c("ticker","name","composite_figi","share_class_figi","Date"))
-# tab_cate2<-df_summary%>% group_by(market,type) %>%  summarise_all(mean)
-# tab_cate2
-```
+The graphs below show the dispersion of the average price through
+density, histograms, and boxplots by each level of market type and
+ticker type.
 
-### Modified Data and Related Plots.
-
-In 1st density plot, Average price and Price range has been derived from
-the data and has been used to plot some trends. The count of tickers has
-has been same in the stock market in terms of average price.
-
-2nd density plot shows average price based on the type of investment.
-This was seen to be maximum for OS type investment.
-
-3rd plot having a box plot summarizes spread of average price for the
-two type of markets. OTC markets cover broader price range.
-
-4th Plot or box plot captures average price in terms of the investment
-type with ADRC types having broader average price share in the given
-time period.
+In the first density plot, Average price has been derived from the data
+and has been used to check for some trends. The OTC has average prices
+smaller than the tickers from Stock market, which was expected since in
+previous analyzes we came to a conclusion that the Stock market is more
+common than OTC and, because of that, they are more likely to return
+more gains.
 
 ``` r
 # quantitative vs market & type
 # group by type and market and average
 
-# df_price = df %>% 
-#   group_by(market, type) %>%
-#   summarise(avg_price = mean( Closing_price), price_range = (Highest_price - Lowest_price))
-
-df_price = output$df_price
-
-h = ggplot(df_price, aes(x = avg_price))
+h = ggplot(output$df_price, aes(x = avg_price))
 
 # histograms by market type
-h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Type of Investment", y = "Count",title=" Avg Price based on Market")+scale_fill_discrete(name = "Market ")
+h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Average Price",title="Average Price by Market Type") + scale_fill_discrete(name = "Market Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+![](README_files/figure-gfm/df_price-1.png)<!-- -->
+
+The density mixed with histogram plots below shows average price based
+on the type of ticker. It is clear that CS and FUND, followed by ETF and
+ETN have the highest average prices. The lowest prices are seen in the
+OS and UNIT ticker types. This was an interesting information, due to
+the possibility of most refined queries considering these results in
+further calls of the API functions.
 
 ``` r
-h + geom_histogram(aes(fill = type, y = ..density..), position = "dodge") + 
-  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Market", y = "Count/Denstiy",title=" Avg Price based on Market")+scale_fill_discrete(name = "Market ")
+# histogram + density of avg_price by ticker type
+h + geom_histogram(aes(fill = type, y = ..density..), position = "stack") + 
+  geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Average Price", title="Average Price by Ticker Type")+scale_fill_discrete(name = "Ticker Type ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-2.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+
+The boxplot below summarizes the spread of average price for the two
+type of markets. OTC markets has lowest values of average price compared
+to Stock, however both seem to show the same spread. Stock market shows
+some possible outliers, which might indicate that some extra variation
+to the data.
 
 ``` r
 # box plot by market and type for avg price
-h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Avg price", y = "Type",title=" Avg Price based on Type")+scale_fill_discrete(name = "Market ")
+h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average Price", y = "Market Type",title=" Boxplot of Average Price by Market Type")+scale_fill_discrete(name = "Market Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-3.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+
+The boxplot below captures average price in terms of the ticker type
+with ADRC types having broader average price share in the given time
+period in contract with the other ticker types that show almost no
+variation, except for Cs, which present a possible outlier and this
+might indicate some extra variation to the data for other time periods.
 
 ``` r
-h + geom_boxplot(aes(y = type,fill=type)) +coord_flip()+ labs(x = "Avg Price", y = "Market",title=" Box Plot showing Avg Price based on Market")+scale_fill_discrete(name = "Market ")
+h + geom_boxplot(aes(y = type,fill=type)) +coord_flip()+ labs(x = "Average Price", y = "Ticker Type",title=" Boxplot of Average Price by Ticker Type")+ scale_fill_discrete(name = "Ticker Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-4-4.png)<!-- -->
+![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
 
-An Empirical Cumulative distribution function is set up based on market
-where data with closing price is filtered at criteria and range of price
-is plotted.
+The scatter plot split by market type and ticker type below summarize
+the relation between typical price and Highest price for data filtered
+based on closing price above average, both in terms of market and ticker
+types. In all the cases highest price and typical price have shown a
+strong linear dependency, except for the combinations OTC/CS, OTC/ETF,
+and OTC/ETV, which have shown one or no data. This means that for OTC,
+there is no CS, ETF, nor ETV ticker types available. Since this data set
+addresses values above average, this results indicates that OTC does not
+provide those options for ticker type for higher values. This is an
+interesting result and can be used for further queries as well, having
+in mind that the investor seeks more gains.
 
-The scatter plots summarize the relation between Closing price and
-Highest price both in terms of market and investment type. In all the
-cases highest price and closing price have shown linear and string
-correlation.
+Additionally, the linear relationship indicates that the typical price
+is can be represented by the highest price or vice versa. This indicates
+high correlation between them. In fact, the correlation between them is
+0.99985, which is strong positive correlation for all data set.
 
 ``` r
-# Empirical CDF by market type - price 50% above price avg up to max price
-# df_filter_price = df %>%
-#   filter( Closing_price > 1.5*mean(df$ Closing_price) & Closing_price < max( Closing_price))
+# scatter plot by market and ticker type
+# price 50% above price avg up to max price
+h1 = ggplot(output$df_filter_price, aes(y = Sum_Typical_price))
 
-df_filter_price = output$df_filter_price
-
-h1 = ggplot(df_filter_price, aes(x =  Closing_price))
-h1 + stat_ecdf(geom = "step", aes(color = market)) + ylab("ECDF")+labs(title ="ECDF Plot capturing Closing Price based on market")
+h1 + geom_point(aes(x = Highest_price)) + facet_grid(type~market) +labs(x= "Highest Price", y= "Closing" ,title ="Typical Price vs Higest Price grouped by Market Type above Price Average")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+![](README_files/figure-gfm/df_filter_price-1.png)<!-- -->
 
-``` r
-h1 + stat_ecdf(geom = "step", aes(color = type)) + ylab("ECDF")+labs(title ="ECDF Plot capturing Closing Price based on type")
-```
+## Analyzing Time Series Data
 
-![](README_files/figure-gfm/unnamed-chunk-5-2.png)<!-- -->
+In this part we will be analyzing data obtained from the
+`agg_endpoint()`.
 
-``` r
-# scatter plot
-h1 + geom_point(aes(y = Highest_price)) + facet_wrap(~market) +labs(x= "Highest Price", y= "Closing" ,title ="Closing Price  vs Higest Price grouped by Type")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-5-3.png)<!-- -->
-
-``` r
-h1 + geom_point(aes(y = Highest_price)) + facet_wrap(~type)+labs(x= "Highest Price", y= "Closing Price" ,title ="Closing Price  vs Higest Price grouped by Market")
-```
-
-![](README_files/figure-gfm/unnamed-chunk-5-4.png)<!-- -->
-
-# Timeseries Data frame- Time_df
-
-the columns have been renamed to easily identify the variables.
-
-``` r
-# time_df<-time_df %>% 
-#   rename(
-#     Closing_price=c,
-#     Highest_price=h,
-#     Lowest_price=l, 
-#     Transactions=n,
-#     Open_price=o, 
-#     Unix_time=t,
-#     Trading_volume=v,
-#     Volume_wt_avg_price=vw,
-#     Date=d
-#    )
-```
-
-#### Summary Table
+### Summary Table
 
 This table summarizes the means of the pricing, transactions and volume
 for the select technology and timberland companies. There is no relation
-b/w two industries but this data is pretty obvious that the Tech giants
-price more and have bigger penetration in the trading business. Majority
-of these companies have world-wide presence compare to timberland
-companies. These tech giants have net worth approx in billions and
-having a price in the range of \$ 100+ for given time period is not
-surprising. Apple is the company having highest trading volume and
-Microsoft had the highest average prices for the given time range.
+between two industries but this data is pretty obvious that the Tech
+giants price more and have bigger penetration in the trading business.
+Majority of these companies have world-wide presence compare to
+timberland companies. These tech giants have net worth approximately in
+billions and having a price in the range of \$100+ for given time period
+is not surprising. Apple is the company having highest trading volume
+and Microsoft had the highest average prices for the given time range.
 
 ``` r
-# time_df_summary<- select(time_df, -c( "tckr","Date"))
-# time_df_summary<-time_df_summary %>% group_by(Company_Name) %>% summarize_all(mean)
-# time_df_summary
-
-kable(output$time_df_summary)
+kable(output$time_df_summary, caption = "Average of Prices by Company Across time")
 ```
 
-| Company_Name                       | Trading_volume | Volume_wt_avg_price | Open_price | Closing_price | Highest_price | Lowest_price |   Unix_time | Transactions |
-|:-----------------------------------|---------------:|--------------------:|-----------:|--------------:|--------------:|-------------:|------------:|-------------:|
-| Alphabet Inc. Class A Common Stock |      700706966 |           131.42652 |  131.27257 |     131.46677 |     138.67452 |    123.21341 | 1.64248e+12 |    2788529.7 |
-| Apple Inc.                         |     1797667668 |           156.55936 |  154.63846 |     157.57538 |     165.87077 |    146.84368 | 1.64248e+12 |   14171324.8 |
-| Microsoft Corp                     |      606837239 |           294.00985 |  292.38423 |     294.45462 |     309.48962 |    276.53000 | 1.64248e+12 |    8064739.8 |
-| Rayonier Inc.                      |       11644927 |            38.53673 |   38.31385 |      38.54615 |      40.76615 |     35.95923 | 1.64248e+12 |     142962.0 |
-| Weyerhaeuser Company               |       83224377 |            37.55658 |   37.30462 |      37.78692 |      39.35231 |     35.44361 | 1.64248e+12 |     677307.2 |
+| Company_Name                       | Trading_volume | Volume_wt_avg_price | Open_price | Closing_price | Highest_price | Lowest_price | Transactions |
+|:-----------------------------------|---------------:|--------------------:|-----------:|--------------:|--------------:|-------------:|-------------:|
+| Alphabet Inc. Class A Common Stock |      700706966 |           131.42652 |  131.27257 |     131.46677 |     138.67452 |    123.21341 |    2788529.7 |
+| Apple Inc.                         |     1797667668 |           156.55936 |  154.63846 |     157.57538 |     165.87077 |    146.84368 |   14171324.8 |
+| Microsoft Corp                     |      606837239 |           294.00985 |  292.38423 |     294.45462 |     309.48962 |    276.53000 |    8064739.8 |
+| Rayonier Inc.                      |       11644927 |            38.53673 |   38.31385 |      38.54615 |      40.76615 |     35.95923 |     142962.0 |
+| Weyerhaeuser Company               |       83224377 |            37.55658 |   37.30462 |      37.78692 |      39.35231 |     35.44361 |     677307.2 |
 
-##### Bar Plot with Facet Wrap.
+Average of Prices by Company Across time
 
-The Mean of transactions grouped by Industry type has been shown below
-as we have 3 technology companies and 2 timberland companies selected
-for the subplots. This shows again transaction wise Technology companies
-have a higher trend. In the month of Jan 2022 Technology companies had
-maximum transactions and timberland companies showing higher numbers in
-the month of May.
+### Barplot of Transactions by Industry Type
+
+The variation of transactions grouped by Industry type has been shown in
+the boxplots below as we have 3 technology companies and 2 timberland
+companies selected for the subplots. This shows again transaction wise
+Technology companies have a higher trend. In the month of Jan 2022
+Technology companies had maximum transactions and timberland companies
+showing higher numbers in the month of May. It is also clear that the
+timberland companies are much more stable in relation to transactions
+than tech companies. This is a clear contrast between high gains and
+risk trade-off.
 
 ``` r
-time_df = output$time_df
-
-ggplot(time_df, aes(x=as.factor(Date), y=Transactions,fill=Industry))+ geom_boxplot()+ facet_wrap(~Industry,  nrow=2,scales = "free" )+guides(x = guide_axis(angle = 90))+ labs(x= "Transactions", y= "Date",title=" Mean Transactions for the time period grouped by Industry type")+scale_fill_discrete(name = "Industry Type ")
+ggplot(output$time_df, aes(x=as.factor(Date), y=Transactions,fill=Industry)) + geom_boxplot()+ facet_wrap(~Industry, nrow=2,scales = "free" ) + 
+  guides(x = guide_axis(angle = 45)) +
+  labs(x= "Transactions", y= "Date",title=" Mean Transactions for the time period grouped by Industry type")+ 
+  scale_fill_discrete(name = "Industry Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-8-1.png)<!-- -->
+![](README_files/figure-gfm/time_df_boxplot-1.png)<!-- -->
 
-#### Line Plots
+### Line Plots of Transactions by Industry Type
 
-The Volume weighted price trend has been captured in the below plot for
-each company. Apple as expected showing highest trends line. It saw
-lowest numbers in the Jul 2021 and again in Jul 2022. It is interesting
-to note all technology companies saw peaks in the month of Nov 2021, Jan
-2022 and Apr 2022
+The Volume weighted price trend has been captured in the line plots
+below for each company. Microsoft has shown highest trends line. It saw
+lowest numbers in the Jul 2022 due to the beginning a deflation period
+in the world economy. It is interesting to note all technology companies
+saw peaks in the month of Nov 2021, Jan 2022 and Apr 2022. The
+timberland companies show lower volume weighted price trends as
+expected, although they seem to have a less intense decline in the price
+compared to the tech companies, showing more stability.
 
 ``` r
-ggplot(time_df, aes(x = Date, y = Transactions, colour =Company_Name, group = Company_Name)) +geom_line() + geom_point()+labs(x= "Date", y= "Volume Weighted Average Price",title=" Volume weighted price for the time range grouped by Companies")
+ggplot(output$time_df, aes(x = Date, y = Volume_wt_avg_price, colour =Company_Name, group = Company_Name)) +geom_line() + geom_point()+labs(x= "Date", y= "Volume Weighted Average Price",title=" Volume weighted price for the time range grouped by Companies")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](README_files/figure-gfm/time_df_line-1.png)<!-- -->
 
-##### MACD (Moving Average Convergence/Divergence) - macd_df
+## Analyzing MACD Data
 
 This section is just for exploring the concept of technical endpoint of
-the API stated. Lot of calculations like macd , moving averages etc are
+the API stated. Lots of calculations like MACD, moving averages, etc are
 used to estimate the trend of the stock and get observations which help
 in deciding if the given time correct for buying or selling.
 
@@ -1017,17 +1072,59 @@ When the MACD plot goes above the signal line, an uptrend may be
 expected, and, when it goes below, a downtrend can be seen. The
 difference between the MACD and signal values is plotted as a histogram,
 which may sometimes give you an early sign that a crossover is about to
-happen. This relation between two can help in determining if
-stock/security can be bought or not. The plot shows a trend between the
-signal and MACD value for various companies keeping histogram as base.
-Slight interaction between value and signal can be seen in the data at
-some points. As the data is limited only few points have been captured
-for companies. For given data crossover trend can clearly be seen for
-Microsoft and Weyerhaeuser.
+happen.
+
+This relation between two can help in determining if stock/security can
+be bought or not. The plot shows a trend between the signal and MACD
+value for our companies keeping histogram as base. Slight interaction
+between value and signal can be seen in the data at some points. As the
+data is limited only few points have been captured for companies. For
+given data crossover trend can clearly be seen for Microsoft and
+Weyerhaeuser.
+
+### Line Plots of MACD by Company
 
 ``` r
 g <- ggplot(data =macd_df, aes(x=histogram))
 g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](README_files/figure-gfm/macd_df-1.png)<!-- -->
+
+### Summary of MACD by Company
+
+In the summary below we can see the average values for each variable
+considered in the MACD data by company. This table shows how close the
+MACD value is to the signal, and thus, how they might interact in a
+specific analysis for buying or selling a paper.
+
+``` r
+kable(output$macd_df_avg, caption = "Average of MACD variables by Company")
+```
+
+| Company_Name                       | avg_timestanp |  avg_value | avg_signal | avg_histogram |
+|:-----------------------------------|--------------:|-----------:|-----------:|--------------:|
+| Alphabet Inc. Class A Common Stock |  1.658515e+12 | -1.1962190 | -0.9232671 |    -0.2729519 |
+| Apple Inc.                         |  1.658515e+12 |  0.3175340 |  0.5303743 |    -0.2128403 |
+| Microsoft Corp                     |  1.658515e+12 | -0.0850675 |  0.4106804 |    -0.4957479 |
+| Rayonier Inc.                      |  1.658504e+12 |  0.1513919 |  0.1820690 |    -0.0306771 |
+| Weyerhaeuser Company               |  1.658515e+12 |  0.0809358 |  0.0905071 |    -0.0095712 |
+
+Average of MACD variables by Company
+
+# Conclusion
+
+We built functions to interact with a financial API through its
+endpoints, retrieved some data sets, and perform a exploratory data
+analysis on these data sets via tables, numerical summaries, and several
+plots. We found some interesting results with regard to the frequency
+and price properties for two different market types and ticker types.
+For the time series data, it was clear that the technology companies
+have shown higher price, although more variation in the price and
+transactions compared to the timberland companies. For the MACD
+analysis, Microsoft and Weyerhaeuser have shown an indication of uptrend
+for further periods even though the world presents a beginning of
+recession period.
+
+Hopefully, our work can help you to access financial API and perform
+basic analyses.
