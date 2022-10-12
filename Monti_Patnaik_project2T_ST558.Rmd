@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 The main goal of this vignette is to provide a set of functions that may assist in accessing specific information contained in the [Financial API](https://polygon.io/docs/stocks). These functions aim to provide data sets for further exploratory data analysis (EDA).   
   The companies selected for this analysis belong to two major groups, technology and real-state companies of the interest of the authors of this vignette. The companies related to the technology group are Apple, Microsoft, and Google. The companies related to real-state group are Weyerhaeuser and Rayonier, both are timberland investment groups.   
-  Four functions were created querying data from 4 end points, or searching keywords, present in the the API. Further, three data sets were created and the EDA was executed for each of them separately. The EDA encompassed categorical and quantitative analyses, numerical and graphical, for each data according to their relevance to the [objective](#eda) of this analysis.   
+  Four functions were created querying data from 4 end points, or searching keywords, present in the the API. Further, three data sets were created and the EDA was executed for each of them separately. The EDA encompassed categorical and quantitative analyses, numerical and graphical, for each data according to their relevance to the [objective](#exploratory-data-analysis) of this analysis.   
   In order for this analysis to happen, some initial contact with the API and an access key are required.
 
 
@@ -574,7 +574,7 @@ The graphs below show the dispersion of the average price through density, histo
   In the density plot below, Average price has been derived from the data and has been used to check for some trends. The OTC has average prices smaller than the tickers from Stock market, which was expected since in previous analyzes we came to a conclusion that the Stock market is more common than OTC and, because of that, they are more likely to return more gains.
   
 
-```{r df_price}
+```{r df_price_p1}
 # quantitative vs market & type
 # group by type and market and average
 
@@ -587,7 +587,7 @@ h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Avera
 
 The density mixed with histogram plots below shows average price based on the type of ticker. It is clear that CS and FUND, followed by ETF and ETN have the highest average prices. The lowest prices are seen in the OS and UNIT ticker types. This was an interesting information, due to the possibility of most refined queries considering these results in further calls of the API functions.
 
-```{r}
+```{r df_price_p2}
 
 # histogram + density of avg_price by ticker type
 h + geom_histogram(aes(fill = type, y = ..density..), position = "stack") + 
@@ -597,7 +597,7 @@ h + geom_histogram(aes(fill = type, y = ..density..), position = "stack") +
 
 The boxplot below summarizes the spread of average price for the two type of markets. OTC markets has lowest values of average price compared to Stock, however OTC shows to be less spread than Stock. Stock market shows some possible outliers, which might indicate that some extra variation to the data.
 
-```{r}
+```{r df_price_p3}
 
 # box plot by market and type for avg price
 h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average Price", y = "Market Type",title=" Boxplot of Average Price by Market Type")+scale_fill_discrete(name = "Market Type")
@@ -606,7 +606,7 @@ h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average 
 
 The boxplot below captures average price in terms of the ticker type with ADRC types having broader average price share in the given time period in contract with the other ticker types that show almost no variation, except for CS, which present a possible outlier and this might indicate some extra variation to the data for other time periods.
 
-```{r}
+```{r df_price_p4}
 
 h + geom_boxplot(aes(y = type,fill=type)) +coord_flip()+ labs(x = "Average Price", y = "Ticker Type",title=" Boxplot of Average Price by Ticker Type")+ scale_fill_discrete(name = "Ticker Type")
 
@@ -622,7 +622,7 @@ The scatter plot split by market type and ticker type below summarize the relati
 # price 50% above price avg up to max price
 h1 = ggplot(output$df_filter_price, aes(y = Sum_Typical_price))
 
-h1 + geom_point(aes(x = Highest_price)) + facet_grid(type~market) +labs(x= "Highest Price", y= "Closing" ,title ="Typical Price vs Higest Price grouped by Market Type above Price Average")
+h1 + geom_point(aes(x = Highest_price)) + facet_grid(type~market) +labs(x= "Highest Price", y= "Typical Price" ,title ="Typical Price vs Higest Price grouped by Market Type above Price Average")
 
 ```
 
