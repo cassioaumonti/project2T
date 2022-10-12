@@ -11,8 +11,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # Goal and Specifications
 
 The main goal of this vignette is to provide a set of functions that may assist in accessing specific information contained in the [Financial API](https://polygon.io/docs/stocks). These functions aim to provide data sets for further exploratory data analysis (EDA).   
+
   The companies selected for this analysis belong to two major groups, technology and real-state companies of the interest of the authors of this vignette. The companies related to the technology group are Apple, Microsoft, and Google. The companies related to real-state group are Weyerhaeuser and Rayonier, both are timberland investment groups.   
-  Four functions were created querying data from 4 end points, or searching keywords, present in the the API. Further, three data sets were created and the EDA was executed for each of them separately. The EDA encompassed categorical and quantitative analyses, numerical and graphical, for each data according to their relevance to the [objective](#exploratory-data-analysis) of this analysis.   
+  
+  Four functions were created querying data from 4 end points, or searching keywords, present in the the API. Further, three data sets were created and the EDA was executed for each of them separately. The EDA encompassed categorical and quantitative analyses, numerical and graphical, for each data according to their relevance to the [objective](#exploratory-data-analysis) of this analysis.     
+  
   In order for this analysis to happen, some initial contact with the API and an access key are required.
 
 
@@ -419,7 +422,9 @@ The main objective of the EDA presented herein is to analyze data sets and extra
 
    The other aspect of the EDA also explores how prices, transactions volume, etc relate with one another for the given tickers/companies, that is, whether any relation or trend can be seen from the historical data. Some important objects for the remaining of the analysis are created in the code below.   
    
-   It is important to notice that every plot produced by the further code uses  `ggplot()` function from `tidyverse` associated to `geom_FUN()` and some modifiers, also present in the same package. For the contingency tables, `table()` function returns the frequency of each level considered. For summary tables, the function `kable()`, from `knitr` package, was used to perform better looking display.
+   It is important to notice that every plot produced by the further code uses  `ggplot()` function from `tidyverse` associated to `geom_FUN()` and some modifiers, also present in the same package. For the contingency tables, `table()` function returns the frequency of each level considered. For summary tables, the function `kable()`, from `knitr` package, was used to perform better looking display.   
+   
+   The code below runs all functions defined in previous sections and assign the objects derived from the API calls to be printed as a short example of what the tables look like. For this case, we used the tibble printing view.
 
 ```{r run_all}
 
@@ -445,7 +450,7 @@ macd_df
 
 ## Summary Wrapper Function
 
-This function takes the object returned by the wrapper function and produces all the data required for the next steps of the EDA. Some objects are created in this summary function, **df** containing a few variables calculated based on other variables, for instance, Typical price is added to the table. This is used to determine volume weighted price. Typical price has been derived as sum of the closing price, highest price, and lower price. The object **tab_cate2** gives the averages of some variables by market and ticker type. The object **df_price** gives the average price by market and ticker type. The object **df_filter_price** gives the observations with prices above the average until the maximum price by market and ticker type. The object **time_df_summary** gives the averages for all variables of the timely data by company.   
+This function takes the object returned by the wrapper function and produces all the data required for the next steps of the EDA. Some objects are created in this summary function, **df** containing a few variables calculated based on other variables, for instance, Typical price is added to the table. This is used to determine volume weighted price. Typical price has been derived as average of the closing price, highest price, and lower price. The object **tab_cate2** gives the averages of some variables by market and ticker type. The object **df_price** gives the average price by market and ticker type. The object **df_filter_price** gives the observations with prices above the average until the maximum price by market and ticker type. The object **time_df_summary** gives the averages for all variables of the timely data by company. The object **macd_df_avg** gives the averages for all variables present in the MACD data.   
 
   With these objects and pre-processed variables we can show some graphs and analyze some trends in the data sets. The code below shows the process of obtaining these objects.
 
@@ -529,7 +534,7 @@ output = data_management(list_data = out)
 
 The first step to understand investment analysis and effectively put your money on some papers is to know some aspects of the market as the available papers. So, the following plot shows the number of ticker type available in each market type for the investment plan. The function `ggplot()` was used here and some `geom_bar()` are giving the detailed oriented plot we see below, by ticker type and market type, having the `stat= count` as default statistic.   
   
-  There is a clear trend in this plot, Common Stocks (CS) and ETFs are the most frequent in the stock market and OS, ADRC, and CS are the most common on the OTC market. These papers give an idea of where the the investors might be allocating their money on.
+  There is a clear trend in this plot, Common Stocks (CS) and ETFs are the most frequent in the stock market and OS, ADRC, and CS are the most common on the OTC market. These papers give an idea of where the investors might be allocating their money on.
 
 ```{r df}
 
@@ -542,9 +547,9 @@ g + geom_bar(aes(fill = type), position = "dodge") +
 
 ### Contingency Tables
 
-We made three contingency tables for this analysis, the first contingency table includes total count of tickers based stocks and otc securities. There are 190 otc based tickers and 683 stock based tickers. The second contingency table includes total count of tickers based on ticker type. There are 8 most common ticker types and the maximum tickers are of CS investment type, with 466 papers. The third contingency table states count of pooled investment based on the market for the given ticker type. The most common is ticker type CS belonging to market Stocks and for the OTC market, the most common ticker type is OS. This trend will be observed in the next graph as well, but with the tables displayed below, it is easier to see the differences among the groups.   
+We made three contingency tables for this analysis, the first contingency table includes total count of tickers based stocks and otc securities. There are about 190 otc based tickers and about 686 stock based tickers. The second contingency table includes total count of tickers based on ticker type. There are 8 most common ticker types and the maximum tickers are of CS investment type, with about 464 papers. The third contingency table states count of pooled investment based on the market for the given ticker type. The most common is ticker type CS belonging to market Stocks and for the OTC market, the most common ticker type is OS. This trend will be observed in the next graph as well, but with the tables displayed below, it is easier to see the differences among the groups.   
   
-  This shows that there were maximum tickers in the stock market for CS and maximum in OTC for OS. It was noted that tickers/companies with ADRC, CS,OS and UNIT investments had both OTC markets. The remaining of ticker types occured just in stock market based investments.
+  The two-way table below shows that there were maximum tickers in the stock market for CS and maximum in OTC for OS. It was noted that tickers/companies with ADRC, CS,OS and UNIT investments had both OTC markets. The remaining of ticker types occurred just in stock market based investments.
 
 ```{r conting_table}
 
@@ -565,13 +570,13 @@ The summary table displays mean of all the quantitative parameters based on two 
 
 ```{r tab_cate2}
 
-kable(output$tab_cate2)
+kable(output$tab_cate2, caption = "Average of Price Derived Variables by Market and Ticker Types")
 
 ```
 
 The graphs below show the dispersion of the average price through density, histograms, and boxplots by each level of market type and ticker type.   
   
-  In the density plot below, Average price has been derived from the data and has been used to check for some trends. The OTC has average prices smaller than the tickers from Stock market, which was expected since in previous analyzes we came to a conclusion that the Stock market is more common than OTC and, because of that, they are more likely to return more gains.
+  In the density plot below, Average price has been derived from the data and has been used to check for some trends. The OTC has average prices smaller than the tickers from Stock market, which was expected since in previous analyzes we came to a conclusion that the Stock market is more common than OTC and, because of that, they are more likely to return more gains. Although, Stock market is more spread across average price, which indicates that there can be more variation in the price when compared to OTC. The latter has two peaks, one in a low price mark and another in the intermediate price mark. Both, however, show more stability than what we can see on the Stock market.
   
 
 ```{r df_price_p1}
@@ -604,7 +609,7 @@ h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average 
 
 ```
 
-The boxplot below captures average price in terms of the ticker type with ADRC types having broader average price share in the given time period in contract with the other ticker types that show almost no variation, except for CS, which present a possible outlier and this might indicate some extra variation to the data for other time periods.
+The boxplot below captures average price in terms of the ticker type with CS types having broader price share distribution in the given time period in contract with the other ticker types that show almost no variation, except for ADCR, which present a possible outlier and this might indicate some extra variation to the data for other time periods. ETF shows the highest prices and low variability.
 
 ```{r df_price_p4}
 
@@ -695,7 +700,7 @@ g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + 
 
 # Conclusion
 
-We built functions to interact with a financial API through its endpoints, retrieved some data sets, and perform a exploratory data analysis on these data sets via tables, numerical summaries, and several plots. We found some interesting results with regard to the frequency and price properties for two different market types and ticker types. For the time series data, it was clear that the technology companies have shown higher price, although more variation in the price and transactions compared to the timberland companies. For the MACD analysis, Microsoft and Weyerhaeuser have shown an indication of uptrend for further periods even though the world presents a beginning of recession period.   
+We built functions to interact with a financial API through its endpoints, retrieved some data sets, and perform a basic exploratory data analysis on these data sets via tables, numerical summaries, and several plots. We found some interesting results with regard to the frequency and price properties for two different market types and ticker types. For the time series data, it was clear that the technology companies have shown higher price, although more variation in the price and transactions compared to the timberland companies. For the MACD analysis, Microsoft and Weyerhaeuser have shown an indication of uptrend for further periods even though the world presents a beginning of recession period.   
 
   Hopefully, our work can help you to access financial API and perform basic analyses.
 

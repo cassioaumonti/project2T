@@ -55,18 +55,21 @@ Cassio Monti & Smitali Patnaik
 The main goal of this vignette is to provide a set of functions that may
 assist in accessing specific information contained in the [Financial
 API](https://polygon.io/docs/stocks). These functions aim to provide
-data sets for further exploratory data analysis (EDA).  
+data sets for further exploratory data analysis (EDA).
+
 The companies selected for this analysis belong to two major groups,
 technology and real-state companies of the interest of the authors of
 this vignette. The companies related to the technology group are Apple,
 Microsoft, and Google. The companies related to real-state group are
-Weyerhaeuser and Rayonier, both are timberland investment groups.  
+Weyerhaeuser and Rayonier, both are timberland investment groups.
+
 Four functions were created querying data from 4 end points, or
 searching keywords, present in the the API. Further, three data sets
 were created and the EDA was executed for each of them separately. The
 EDA encompassed categorical and quantitative analyses, numerical and
 graphical, for each data according to their relevance to the
-[objective](#eda) of this analysis.  
+[objective](#exploratory-data-analysis) of this analysis.
+
 In order for this analysis to happen, some initial contact with the API
 and an access key are required.
 
@@ -611,6 +614,11 @@ tables, `table()` function returns the frequency of each level
 considered. For summary tables, the function `kable()`, from `knitr`
 package, was used to perform better looking display.
 
+The code below runs all functions defined in previous sections and
+assign the objects derived from the API calls to be printed as a short
+example of what the tables look like. For this case, we used the tibble
+printing view.
+
 ``` r
 # ticker vector to call the API
 # tickers = c("AAPL","GOOGL", "MSFT","WY","RYN")
@@ -624,21 +632,23 @@ df = out$df
 df
 ```
 
-    ## # A tibble: 873 × 14
-    ##    ticker name       market type  compo…¹ share…² Tradi…³ Volum…⁴ Open_…⁵ Closi…⁶ Highe…⁷ Lowes…⁸ Unix_…⁹ Trans…˟
-    ##    <chr>  <chr>      <chr>  <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <int>
-    ##  1 CNTMF  CANSORTIU… otc    OS    BBG00N… BBG00N…  107611 1.85e-1 1.85e-1 1.85e-1 1.88e-1 1.8 e-1 1.66e12      11
-    ##  2 OODH   ORION DIV… otc    CS    BBG003… BBG003…  204375 3.82e-2 4.3 e-2 3.6 e-2 4.3 e-2 3.5 e-2 1.66e12      20
-    ##  3 HEOFF  H2O INNOV… otc    OS    BBG000… BBG001…    2752 1.52e+0 1.54e+0 1.52e+0 1.54e+0 1.52e+0 1.66e12       7
-    ##  4 BNVIF  BINOVI TE… otc    OS    BBG002… BBG002…    1042 6.24e-2 6.49e-2 6   e-2 6.49e-2 6   e-2 1.66e12       2
-    ##  5 BDWBY  BUDWEISER… otc    ADRC  BBG00Q… BBG00Q…     597 1.15e+1 1.16e+1 1.16e+1 1.16e+1 1.16e+1 1.66e12       7
-    ##  6 HKMPY  HIKMA PHA… otc    ADRC  BBG000… BBG001…    1350 4.22e+1 4.30e+1 4.17e+1 4.33e+1 4.17e+1 1.66e12      11
-    ##  7 NHMD   NATE'S FO… otc    CS    BBG000… BBG001… 1223667 1.47e-3 1.4 e-3 1.5 e-3 1.5 e-3 1.4 e-3 1.66e12       7
-    ##  8 HSNGY  HANG SENG… otc    ADRC  BBG000… BBG001…   41438 1.63e+1 1.63e+1 1.64e+1 1.64e+1 1.63e+1 1.66e12      76
-    ##  9 PDER   PARDEE RE… otc    CS    BBG000… BBG001…     140 2.58e+2 2.58e+2 2.58e+2 2.58e+2 2.58e+2 1.66e12      19
-    ## 10 YAMHY  YAMAHA MO… otc    ADRC  BBG000… BBG001…     691 9.61e+0 9.61e+0 9.46e+0 9.72e+0 9.46e+0 1.66e12       7
-    ## # … with 863 more rows, and abbreviated variable names ¹​composite_figi, ²​share_class_figi, ³​Trading_volume,
-    ## #   ⁴​Volume_wt_avg_price, ⁵​Open_price, ⁶​Closing_price, ⁷​Highest_price, ⁸​Lowest_price, ⁹​Unix_time, ˟​Transactions
+    ## # A tibble: 876 × 14
+    ##    ticker name  market type  compo…¹ share…² Tradi…³ Volum…⁴ Open_…⁵ Closi…⁶ Highe…⁷
+    ##    <chr>  <chr> <chr>  <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 CNTMF  CANS… otc    OS    BBG00N… BBG00N…  107611 1.85e-1 1.85e-1 1.85e-1 1.88e-1
+    ##  2 OODH   ORIO… otc    CS    BBG003… BBG003…  204375 3.82e-2 4.3 e-2 3.6 e-2 4.3 e-2
+    ##  3 HEOFF  H2O … otc    OS    BBG000… BBG001…    2752 1.52e+0 1.54e+0 1.52e+0 1.54e+0
+    ##  4 BNVIF  BINO… otc    OS    BBG002… BBG002…    1042 6.24e-2 6.49e-2 6   e-2 6.49e-2
+    ##  5 BDWBY  BUDW… otc    ADRC  BBG00Q… BBG00Q…     597 1.15e+1 1.16e+1 1.16e+1 1.16e+1
+    ##  6 HKMPY  HIKM… otc    ADRC  BBG000… BBG001…    1350 4.22e+1 4.30e+1 4.17e+1 4.33e+1
+    ##  7 NHMD   NATE… otc    CS    BBG000… BBG001… 1223667 1.47e-3 1.4 e-3 1.5 e-3 1.5 e-3
+    ##  8 HSNGY  HANG… otc    ADRC  BBG000… BBG001…   41438 1.63e+1 1.63e+1 1.64e+1 1.64e+1
+    ##  9 PDER   PARD… otc    CS    BBG000… BBG001…     140 2.58e+2 2.58e+2 2.58e+2 2.58e+2
+    ## 10 YAMHY  YAMA… otc    ADRC  BBG000… BBG001…     691 9.61e+0 9.61e+0 9.46e+0 9.72e+0
+    ## # … with 866 more rows, 3 more variables: Lowest_price <dbl>, Unix_time <dbl>,
+    ## #   Transactions <int>, and abbreviated variable names ¹​composite_figi,
+    ## #   ²​share_class_figi, ³​Trading_volume, ⁴​Volume_wt_avg_price, ⁵​Open_price,
+    ## #   ⁶​Closing_price, ⁷​Highest_price
 
 ``` r
 time_df = out$time_df
@@ -646,20 +656,21 @@ time_df
 ```
 
     ## # A tibble: 65 × 11
-    ##    Company_Name tckr  Date       Trading_volume Volume_wt_avg_p…¹ Open_…² Closi…³ Highe…⁴ Lowes…⁵ Unix_…⁶ Trans…⁷
-    ##    <chr>        <chr> <date>              <dbl>             <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <int>
-    ##  1 Apple Inc.   AAPL  2021-07-22     1581194431              147.    146.    148.    152.    143. 1.63e12  1.11e7
-    ##  2 Apple Inc.   AAPL  2021-08-22     1512015704              151.    148.    146.    157.    146. 1.63e12  1.11e7
-    ##  3 Apple Inc.   AAPL  2021-09-22     1734706549              143.    144.    149.    149.    138. 1.63e12  1.27e7
-    ##  4 Apple Inc.   AAPL  2021-10-22     1521123082              151.    149.    158.    159.    146. 1.63e12  1.10e7
-    ##  5 Apple Inc.   AAPL  2021-11-22     2483951766              169.    158.    171.    182.    156. 1.64e12  1.82e7
-    ##  6 Apple Inc.   AAPL  2021-12-22     1603598297              175.    168.    173.    183.    167. 1.64e12  1.31e7
-    ##  7 Apple Inc.   AAPL  2022-01-22     2170273792              168.    172.    173.    177.    155. 1.64e12  1.88e7
-    ##  8 Apple Inc.   AAPL  2022-02-22     2008854845              161.    171.    164.    172.    150. 1.65e12  1.71e7
-    ##  9 Apple Inc.   AAPL  2022-03-22     1598875527              172.    164.    165.    180.    163. 1.65e12  1.28e7
-    ## 10 Apple Inc.   AAPL  2022-04-22     2335163426              156.    164.    149.    172.    139. 1.65e12  2.02e7
-    ## # … with 55 more rows, and abbreviated variable names ¹​Volume_wt_avg_price, ²​Open_price, ³​Closing_price,
-    ## #   ⁴​Highest_price, ⁵​Lowest_price, ⁶​Unix_time, ⁷​Transactions
+    ##    Compan…¹ tckr  Date       Tradi…² Volum…³ Open_…⁴ Closi…⁵ Highe…⁶ Lowes…⁷ Unix_…⁸
+    ##    <chr>    <chr> <date>       <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
+    ##  1 Apple I… AAPL  2021-07-22  1.58e9    147.    146.    148.    152.    143. 1.63e12
+    ##  2 Apple I… AAPL  2021-08-22  1.51e9    151.    148.    146.    157.    146. 1.63e12
+    ##  3 Apple I… AAPL  2021-09-22  1.73e9    143.    144.    149.    149.    138. 1.63e12
+    ##  4 Apple I… AAPL  2021-10-22  1.52e9    151.    149.    158.    159.    146. 1.63e12
+    ##  5 Apple I… AAPL  2021-11-22  2.48e9    169.    158.    171.    182.    156. 1.64e12
+    ##  6 Apple I… AAPL  2021-12-22  1.60e9    175.    168.    173.    183.    167. 1.64e12
+    ##  7 Apple I… AAPL  2022-01-22  2.17e9    168.    172.    173.    177.    155. 1.64e12
+    ##  8 Apple I… AAPL  2022-02-22  2.01e9    161.    171.    164.    172.    150. 1.65e12
+    ##  9 Apple I… AAPL  2022-03-22  1.60e9    172.    164.    165.    180.    163. 1.65e12
+    ## 10 Apple I… AAPL  2022-04-22  2.34e9    156.    164.    149.    172.    139. 1.65e12
+    ## # … with 55 more rows, 1 more variable: Transactions <int>, and abbreviated
+    ## #   variable names ¹​Company_Name, ²​Trading_volume, ³​Volume_wt_avg_price,
+    ## #   ⁴​Open_price, ⁵​Closing_price, ⁶​Highest_price, ⁷​Lowest_price, ⁸​Unix_time
 
 ``` r
 macd_df = out$macd_df
@@ -688,14 +699,15 @@ produces all the data required for the next steps of the EDA. Some
 objects are created in this summary function, **df** containing a few
 variables calculated based on other variables, for instance, Typical
 price is added to the table. This is used to determine volume weighted
-price. Typical price has been derived as sum of the closing price,
+price. Typical price has been derived as average of the closing price,
 highest price, and lower price. The object **tab_cate2** gives the
 averages of some variables by market and ticker type. The object
 **df_price** gives the average price by market and ticker type. The
 object **df_filter_price** gives the observations with prices above the
 average until the maximum price by market and ticker type. The object
 **time_df_summary** gives the averages for all variables of the timely
-data by company.
+data by company. The object **macd_df_avg** gives the averages for all
+variables present in the MACD data.
 
 With these objects and pre-processed variables we can show some graphs
 and analyze some trends in the data sets. The code below shows the
@@ -788,7 +800,7 @@ oriented plot we see below, by ticker type and market type, having the
 
 There is a clear trend in this plot, Common Stocks (CS) and ETFs are the
 most frequent in the stock market and OS, ADRC, and CS are the most
-common on the OTC market. These papers give an idea of where the the
+common on the OTC market. These papers give an idea of where the
 investors might be allocating their money on.
 
 ``` r
@@ -804,21 +816,22 @@ g + geom_bar(aes(fill = type), position = "dodge") +
 
 We made three contingency tables for this analysis, the first
 contingency table includes total count of tickers based stocks and otc
-securities. There are 190 otc based tickers and 683 stock based tickers.
-The second contingency table includes total count of tickers based on
-ticker type. There are 8 most common ticker types and the maximum
-tickers are of CS investment type, with 466 papers. The third
-contingency table states count of pooled investment based on the market
-for the given ticker type. The most common is ticker type CS belonging
-to market Stocks and for the OTC market, the most common ticker type is
-OS. This trend will be observed in the next graph as well, but with the
-tables displayed below, it is easier to see the differences among the
-groups.
+securities. There are about 190 otc based tickers and about 686 stock
+based tickers. The second contingency table includes total count of
+tickers based on ticker type. There are 8 most common ticker types and
+the maximum tickers are of CS investment type, with about 464 papers.
+The third contingency table states count of pooled investment based on
+the market for the given ticker type. The most common is ticker type CS
+belonging to market Stocks and for the OTC market, the most common
+ticker type is OS. This trend will be observed in the next graph as
+well, but with the tables displayed below, it is easier to see the
+differences among the groups.
 
-This shows that there were maximum tickers in the stock market for CS
-and maximum in OTC for OS. It was noted that tickers/companies with
-ADRC, CS,OS and UNIT investments had both OTC markets. The remaining of
-ticker types occured just in stock market based investments.
+The two-way table below shows that there were maximum tickers in the
+stock market for CS and maximum in OTC for OS. It was noted that
+tickers/companies with ADRC, CS,OS and UNIT investments had both OTC
+markets. The remaining of ticker types occurred just in stock market
+based investments.
 
 ``` r
 # for categorical and numerical EDA
@@ -828,7 +841,7 @@ kable(table(output$df$market), col.names = c("Market Type","Frequency"))
 | Market Type | Frequency |
 |:------------|----------:|
 | otc         |       190 |
-| stocks      |       683 |
+| stocks      |       686 |
 
 ``` r
 kable(table(output$df$type), col.names = c("Ticker Type","Frequency"))
@@ -836,14 +849,14 @@ kable(table(output$df$type), col.names = c("Ticker Type","Frequency"))
 
 | Ticker Type | Frequency |
 |:------------|----------:|
-| ADRC        |        72 |
-| CS          |       466 |
-| ETF         |       205 |
-| ETN         |         5 |
-| ETV         |         6 |
-| FUND        |        35 |
+| ADRC        |        76 |
+| CS          |       464 |
+| ETF         |       207 |
+| ETN         |         7 |
+| ETV         |         3 |
+| FUND        |        36 |
 | OS          |        70 |
-| UNIT        |        14 |
+| UNIT        |        13 |
 
 ``` r
 kable(table(output$df$market, output$df$type), caption = "Contingency Table of Market Type by Ticker Type")
@@ -852,7 +865,7 @@ kable(table(output$df$market, output$df$type), caption = "Contingency Table of M
 |        | ADRC |  CS | ETF | ETN | ETV | FUND |  OS | UNIT |
 |:-------|-----:|----:|----:|----:|----:|-----:|----:|-----:|
 | otc    |   44 |  74 |   0 |   0 |   0 |    0 |  70 |    2 |
-| stocks |   28 | 392 | 205 |   5 |   6 |   35 |   0 |   12 |
+| stocks |   32 | 390 | 207 |   7 |   3 |   36 |   0 |   11 |
 
 Contingency Table of Market Type by Ticker Type
 
@@ -875,7 +888,7 @@ higher prices considering opening and closing prices. This corroborates
 with the statement above.
 
 ``` r
-kable(output$tab_cate2)
+kable(output$tab_cate2, caption = "Average of Price Derived Variables by Market and Ticker Types")
 ```
 
 | market | type | Trading_volume | Volume_wt_avg_price | Open_price | Closing_price | Highest_price | Lowest_price | Transactions | Sum_Typical_price |
@@ -884,13 +897,15 @@ kable(output$tab_cate2)
 | otc    | CS   |   23779311.378 |            4.738820 |   4.740364 |      4.732953 |      4.751451 |     4.721854 |    181.68919 |          4.735419 |
 | otc    | OS   |      31769.329 |            1.775972 |   1.785386 |      1.753709 |      1.801946 |     1.740986 |     12.71429 |          1.765547 |
 | otc    | UNIT |      12464.000 |            5.972900 |   6.000000 |      5.974000 |      6.010000 |     5.954000 |     23.50000 |          5.979333 |
-| stocks | ADRC |    1071487.714 |           21.934853 |  22.135546 |     21.792646 |     22.401757 |    21.625571 |   6383.03571 |         21.939992 |
-| stocks | CS   |    1327825.402 |           42.842359 |  43.212892 |     42.777576 |     43.749069 |    42.264742 |  11336.96939 |         42.930462 |
-| stocks | ETF  |     974294.776 |           39.763325 |  39.941929 |     39.664408 |     40.079720 |    39.474093 |   3476.44878 |         39.739407 |
-| stocks | ETN  |      12649.800 |           33.249500 |  33.221100 |     32.975140 |     33.728000 |    32.844040 |     61.80000 |         33.182393 |
-| stocks | ETV  |    1571428.333 |           42.923583 |  42.481050 |     42.914467 |     43.784433 |    42.266550 |   7638.00000 |         42.988483 |
-| stocks | FUND |      75510.029 |           12.325657 |  12.367143 |     12.294714 |     12.450237 |    12.233200 |    354.54286 |         12.326050 |
-| stocks | UNIT |       2996.083 |            9.923975 |   9.929167 |      9.917083 |      9.931250 |     9.915000 |     11.66667 |          9.921111 |
+| stocks | ADRC |    2322177.250 |           20.620218 |  20.807041 |     20.494503 |     21.048881 |    20.333469 |   8742.06250 |         20.625618 |
+| stocks | CS   |    1327836.681 |           41.889266 |  42.248138 |     41.827770 |     42.784632 |    41.313961 |  11236.38205 |         41.975454 |
+| stocks | ETF  |     810798.237 |           42.984732 |  43.185112 |     42.877360 |     43.357166 |    42.663893 |   3035.98551 |         42.966140 |
+| stocks | ETN  |      14929.429 |           30.489357 |  30.303643 |     30.303343 |     30.905043 |    30.007486 |    127.28571 |         30.405290 |
+| stocks | ETV  |    1834717.000 |           24.908033 |  24.805433 |     24.845600 |     25.055533 |    24.742567 |   3794.00000 |         24.881233 |
+| stocks | FUND |      73518.222 |           12.517689 |  12.560278 |     12.491806 |     12.643128 |    12.424547 |    345.58333 |         12.519827 |
+| stocks | UNIT |       3259.364 |            9.938882 |   9.944546 |      9.931364 |      9.946818 |     9.929091 |     12.63636 |          9.935758 |
+
+Average of Price Derived Variables by Market and Ticker Types
 
 The graphs below show the dispersion of the average price through
 density, histograms, and boxplots by each level of market type and
@@ -901,7 +916,11 @@ and has been used to check for some trends. The OTC has average prices
 smaller than the tickers from Stock market, which was expected since in
 previous analyzes we came to a conclusion that the Stock market is more
 common than OTC and, because of that, they are more likely to return
-more gains.
+more gains. Although, Stock market is more spread across average price,
+which indicates that there can be more variation in the price when
+compared to OTC. The latter has two peaks, one in a low price mark and
+another in the intermediate price mark. Both, however, show more
+stability than what we can see on the Stock market.
 
 ``` r
 # quantitative vs market & type
@@ -913,7 +932,7 @@ h = ggplot(output$df_price, aes(x = avg_price))
 h + geom_density(adjust = 0.5, alpha = 0.5, aes(fill = market))+ labs(x = "Average Price",title="Average Price by Market Type") + scale_fill_discrete(name = "Market Type")
 ```
 
-![](README_files/figure-gfm/df_price-1.png)<!-- -->
+![](README_files/figure-gfm/df_price_p1-1.png)<!-- -->
 
 The density mixed with histogram plots below shows average price based
 on the type of ticker. It is clear that CS and FUND, followed by ETF and
@@ -928,7 +947,7 @@ h + geom_histogram(aes(fill = type, y = ..density..), position = "stack") +
   geom_density(adjust = 0.5, alpha = 0.5, aes(fill = type))+ labs(x = "Average Price", title="Average Price by Ticker Type")+scale_fill_discrete(name = "Ticker Type ")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-1-1.png)<!-- -->
+![](README_files/figure-gfm/df_price_p2-1.png)<!-- -->
 
 The boxplot below summarizes the spread of average price for the two
 type of markets. OTC markets has lowest values of average price compared
@@ -941,19 +960,20 @@ variation to the data.
 h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average Price", y = "Market Type",title=" Boxplot of Average Price by Market Type")+scale_fill_discrete(name = "Market Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-2-1.png)<!-- -->
+![](README_files/figure-gfm/df_price_p3-1.png)<!-- -->
 
 The boxplot below captures average price in terms of the ticker type
-with ADRC types having broader average price share in the given time
+with CS types having broader price share distribution in the given time
 period in contract with the other ticker types that show almost no
-variation, except for CS, which present a possible outlier and this
+variation, except for ADCR, which present a possible outlier and this
 might indicate some extra variation to the data for other time periods.
+ETF shows the highest prices and low variability.
 
 ``` r
 h + geom_boxplot(aes(y = type,fill=type)) +coord_flip()+ labs(x = "Average Price", y = "Ticker Type",title=" Boxplot of Average Price by Ticker Type")+ scale_fill_discrete(name = "Ticker Type")
 ```
 
-![](README_files/figure-gfm/unnamed-chunk-3-1.png)<!-- -->
+![](README_files/figure-gfm/df_price_p4-1.png)<!-- -->
 
 The scatter plot split by market type and ticker type below summarize
 the relation between typical price and Highest price for data filtered
@@ -970,14 +990,14 @@ in mind that the investor seeks more gains.
 Additionally, the linear relationship indicates that the typical price
 is can be represented by the highest price or vice versa. This indicates
 high correlation between them. In fact, the correlation between them is
-0.99985, which is strong positive correlation for all data set.
+0.9998385, which is strong positive correlation for all data set.
 
 ``` r
 # scatter plot by market and ticker type
 # price 50% above price avg up to max price
 h1 = ggplot(output$df_filter_price, aes(y = Sum_Typical_price))
 
-h1 + geom_point(aes(x = Highest_price)) + facet_grid(type~market) +labs(x= "Highest Price", y= "Closing" ,title ="Typical Price vs Higest Price grouped by Market Type above Price Average")
+h1 + geom_point(aes(x = Highest_price)) + facet_grid(type~market) +labs(x= "Highest Price", y= "Typical Price" ,title ="Typical Price vs Higest Price grouped by Market Type above Price Average")
 ```
 
 ![](README_files/figure-gfm/df_filter_price-1.png)<!-- -->
@@ -1111,13 +1131,13 @@ g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + 
 # Conclusion
 
 We built functions to interact with a financial API through its
-endpoints, retrieved some data sets, and perform a exploratory data
-analysis on these data sets via tables, numerical summaries, and several
-plots. We found some interesting results with regard to the frequency
-and price properties for two different market types and ticker types.
-For the time series data, it was clear that the technology companies
-have shown higher price, although more variation in the price and
-transactions compared to the timberland companies. For the MACD
+endpoints, retrieved some data sets, and perform a basic exploratory
+data analysis on these data sets via tables, numerical summaries, and
+several plots. We found some interesting results with regard to the
+frequency and price properties for two different market types and ticker
+types. For the time series data, it was clear that the technology
+companies have shown higher price, although more variation in the price
+and transactions compared to the timberland companies. For the MACD
 analysis, Microsoft and Weyerhaeuser have shown an indication of uptrend
 for further periods even though the world presents a beginning of
 recession period.
