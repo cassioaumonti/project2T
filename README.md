@@ -44,10 +44,10 @@ Cassio Monti & Smitali Patnaik
             Transactions by Industry Type</a>
     -   <a href="#analyzing-macd-data" id="toc-analyzing-macd-data">Analyzing
         MACD Data</a>
-        -   <a href="#line-plots-of-macd-by-company"
-            id="toc-line-plots-of-macd-by-company">Line Plots of MACD by Company</a>
         -   <a href="#summary-of-macd-by-company"
             id="toc-summary-of-macd-by-company">Summary of MACD by Company</a>
+        -   <a href="#line-plots-of-macd-by-company"
+            id="toc-line-plots-of-macd-by-company">Line Plots of MACD by Company</a>
 -   <a href="#conclusion" id="toc-conclusion">Conclusion</a>
 
 # Goal and Specifications
@@ -625,22 +625,20 @@ df
 ```
 
     ## # A tibble: 873 × 14
-    ##    ticker name  market type  compo…¹ share…² Tradi…³ Volum…⁴ Open_…⁵ Closi…⁶ Highe…⁷
-    ##    <chr>  <chr> <chr>  <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-    ##  1 CNTMF  CANS… otc    OS    BBG00N… BBG00N…  107611 1.85e-1 1.85e-1 1.85e-1 1.88e-1
-    ##  2 OODH   ORIO… otc    CS    BBG003… BBG003…  204375 3.82e-2 4.3 e-2 3.6 e-2 4.3 e-2
-    ##  3 HEOFF  H2O … otc    OS    BBG000… BBG001…    2752 1.52e+0 1.54e+0 1.52e+0 1.54e+0
-    ##  4 BNVIF  BINO… otc    OS    BBG002… BBG002…    1042 6.24e-2 6.49e-2 6   e-2 6.49e-2
-    ##  5 BDWBY  BUDW… otc    ADRC  BBG00Q… BBG00Q…     597 1.15e+1 1.16e+1 1.16e+1 1.16e+1
-    ##  6 HKMPY  HIKM… otc    ADRC  BBG000… BBG001…    1350 4.22e+1 4.30e+1 4.17e+1 4.33e+1
-    ##  7 NHMD   NATE… otc    CS    BBG000… BBG001… 1223667 1.47e-3 1.4 e-3 1.5 e-3 1.5 e-3
-    ##  8 HSNGY  HANG… otc    ADRC  BBG000… BBG001…   41438 1.63e+1 1.63e+1 1.64e+1 1.64e+1
-    ##  9 PDER   PARD… otc    CS    BBG000… BBG001…     140 2.58e+2 2.58e+2 2.58e+2 2.58e+2
-    ## 10 YAMHY  YAMA… otc    ADRC  BBG000… BBG001…     691 9.61e+0 9.61e+0 9.46e+0 9.72e+0
-    ## # … with 863 more rows, 3 more variables: Lowest_price <dbl>, Unix_time <dbl>,
-    ## #   Transactions <int>, and abbreviated variable names ¹​composite_figi,
-    ## #   ²​share_class_figi, ³​Trading_volume, ⁴​Volume_wt_avg_price, ⁵​Open_price,
-    ## #   ⁶​Closing_price, ⁷​Highest_price
+    ##    ticker name       market type  compo…¹ share…² Tradi…³ Volum…⁴ Open_…⁵ Closi…⁶ Highe…⁷ Lowes…⁸ Unix_…⁹ Trans…˟
+    ##    <chr>  <chr>      <chr>  <chr> <chr>   <chr>     <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <int>
+    ##  1 CNTMF  CANSORTIU… otc    OS    BBG00N… BBG00N…  107611 1.85e-1 1.85e-1 1.85e-1 1.88e-1 1.8 e-1 1.66e12      11
+    ##  2 OODH   ORION DIV… otc    CS    BBG003… BBG003…  204375 3.82e-2 4.3 e-2 3.6 e-2 4.3 e-2 3.5 e-2 1.66e12      20
+    ##  3 HEOFF  H2O INNOV… otc    OS    BBG000… BBG001…    2752 1.52e+0 1.54e+0 1.52e+0 1.54e+0 1.52e+0 1.66e12       7
+    ##  4 BNVIF  BINOVI TE… otc    OS    BBG002… BBG002…    1042 6.24e-2 6.49e-2 6   e-2 6.49e-2 6   e-2 1.66e12       2
+    ##  5 BDWBY  BUDWEISER… otc    ADRC  BBG00Q… BBG00Q…     597 1.15e+1 1.16e+1 1.16e+1 1.16e+1 1.16e+1 1.66e12       7
+    ##  6 HKMPY  HIKMA PHA… otc    ADRC  BBG000… BBG001…    1350 4.22e+1 4.30e+1 4.17e+1 4.33e+1 4.17e+1 1.66e12      11
+    ##  7 NHMD   NATE'S FO… otc    CS    BBG000… BBG001… 1223667 1.47e-3 1.4 e-3 1.5 e-3 1.5 e-3 1.4 e-3 1.66e12       7
+    ##  8 HSNGY  HANG SENG… otc    ADRC  BBG000… BBG001…   41438 1.63e+1 1.63e+1 1.64e+1 1.64e+1 1.63e+1 1.66e12      76
+    ##  9 PDER   PARDEE RE… otc    CS    BBG000… BBG001…     140 2.58e+2 2.58e+2 2.58e+2 2.58e+2 2.58e+2 1.66e12      19
+    ## 10 YAMHY  YAMAHA MO… otc    ADRC  BBG000… BBG001…     691 9.61e+0 9.61e+0 9.46e+0 9.72e+0 9.46e+0 1.66e12       7
+    ## # … with 863 more rows, and abbreviated variable names ¹​composite_figi, ²​share_class_figi, ³​Trading_volume,
+    ## #   ⁴​Volume_wt_avg_price, ⁵​Open_price, ⁶​Closing_price, ⁷​Highest_price, ⁸​Lowest_price, ⁹​Unix_time, ˟​Transactions
 
 ``` r
 time_df = out$time_df
@@ -648,21 +646,20 @@ time_df
 ```
 
     ## # A tibble: 65 × 11
-    ##    Compan…¹ tckr  Date       Tradi…² Volum…³ Open_…⁴ Closi…⁵ Highe…⁶ Lowes…⁷ Unix_…⁸
-    ##    <chr>    <chr> <date>       <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>
-    ##  1 Apple I… AAPL  2021-07-22  1.58e9    147.    146.    148.    152.    143. 1.63e12
-    ##  2 Apple I… AAPL  2021-08-22  1.51e9    151.    148.    146.    157.    146. 1.63e12
-    ##  3 Apple I… AAPL  2021-09-22  1.73e9    143.    144.    149.    149.    138. 1.63e12
-    ##  4 Apple I… AAPL  2021-10-22  1.52e9    151.    149.    158.    159.    146. 1.63e12
-    ##  5 Apple I… AAPL  2021-11-22  2.48e9    169.    158.    171.    182.    156. 1.64e12
-    ##  6 Apple I… AAPL  2021-12-22  1.60e9    175.    168.    173.    183.    167. 1.64e12
-    ##  7 Apple I… AAPL  2022-01-22  2.17e9    168.    172.    173.    177.    155. 1.64e12
-    ##  8 Apple I… AAPL  2022-02-22  2.01e9    161.    171.    164.    172.    150. 1.65e12
-    ##  9 Apple I… AAPL  2022-03-22  1.60e9    172.    164.    165.    180.    163. 1.65e12
-    ## 10 Apple I… AAPL  2022-04-22  2.34e9    156.    164.    149.    172.    139. 1.65e12
-    ## # … with 55 more rows, 1 more variable: Transactions <int>, and abbreviated
-    ## #   variable names ¹​Company_Name, ²​Trading_volume, ³​Volume_wt_avg_price,
-    ## #   ⁴​Open_price, ⁵​Closing_price, ⁶​Highest_price, ⁷​Lowest_price, ⁸​Unix_time
+    ##    Company_Name tckr  Date       Trading_volume Volume_wt_avg_p…¹ Open_…² Closi…³ Highe…⁴ Lowes…⁵ Unix_…⁶ Trans…⁷
+    ##    <chr>        <chr> <date>              <dbl>             <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <dbl>   <int>
+    ##  1 Apple Inc.   AAPL  2021-07-22     1581194431              147.    146.    148.    152.    143. 1.63e12  1.11e7
+    ##  2 Apple Inc.   AAPL  2021-08-22     1512015704              151.    148.    146.    157.    146. 1.63e12  1.11e7
+    ##  3 Apple Inc.   AAPL  2021-09-22     1734706549              143.    144.    149.    149.    138. 1.63e12  1.27e7
+    ##  4 Apple Inc.   AAPL  2021-10-22     1521123082              151.    149.    158.    159.    146. 1.63e12  1.10e7
+    ##  5 Apple Inc.   AAPL  2021-11-22     2483951766              169.    158.    171.    182.    156. 1.64e12  1.82e7
+    ##  6 Apple Inc.   AAPL  2021-12-22     1603598297              175.    168.    173.    183.    167. 1.64e12  1.31e7
+    ##  7 Apple Inc.   AAPL  2022-01-22     2170273792              168.    172.    173.    177.    155. 1.64e12  1.88e7
+    ##  8 Apple Inc.   AAPL  2022-02-22     2008854845              161.    171.    164.    172.    150. 1.65e12  1.71e7
+    ##  9 Apple Inc.   AAPL  2022-03-22     1598875527              172.    164.    165.    180.    163. 1.65e12  1.28e7
+    ## 10 Apple Inc.   AAPL  2022-04-22     2335163426              156.    164.    149.    172.    139. 1.65e12  2.02e7
+    ## # … with 55 more rows, and abbreviated variable names ¹​Volume_wt_avg_price, ²​Open_price, ³​Closing_price,
+    ## #   ⁴​Highest_price, ⁵​Lowest_price, ⁶​Unix_time, ⁷​Transactions
 
 ``` r
 macd_df = out$macd_df
@@ -1072,24 +1069,8 @@ When the MACD plot goes above the signal line, an uptrend may be
 expected, and, when it goes below, a downtrend can be seen. The
 difference between the MACD and signal values is plotted as a histogram,
 which may sometimes give you an early sign that a crossover is about to
-happen.
-
-This relation between two can help in determining if stock/security can
-be bought or not. The plot shows a trend between the signal and MACD
-value for our companies keeping histogram as base. Slight interaction
-between value and signal can be seen in the data at some points. As the
-data is limited only few points have been captured for companies. For
-given data crossover trend can clearly be seen for Microsoft and
-Weyerhaeuser.
-
-### Line Plots of MACD by Company
-
-``` r
-g <- ggplot(data =macd_df, aes(x=histogram))
-g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
-```
-
-![](README_files/figure-gfm/macd_df-1.png)<!-- -->
+happen.This relation between two can help in determining if
+stock/security can be bought or not.
 
 ### Summary of MACD by Company
 
@@ -1111,6 +1092,21 @@ kable(output$macd_df_avg, caption = "Average of MACD variables by Company")
 | Weyerhaeuser Company               |  1.658515e+12 |  0.0809358 |  0.0905071 |    -0.0095712 |
 
 Average of MACD variables by Company
+
+### Line Plots of MACD by Company
+
+The plot shows a trend between the signal and MACD value for our
+companies keeping histogram as base. Slight interaction between value
+and signal can be seen in the data at some points. As the data is
+limited only few points have been captured for companies. For given data
+crossover trend can clearly be seen for Microsoft and Weyerhaeuser.
+
+``` r
+g <- ggplot(data =macd_df, aes(x=histogram))
+g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
+```
+
+![](README_files/figure-gfm/macd_df-1.png)<!-- -->
 
 # Conclusion
 
