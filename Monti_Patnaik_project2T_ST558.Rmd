@@ -669,20 +669,8 @@ This section is just for exploring the concept of technical endpoint of the API 
 
   MACD (Moving Average Convergence/Divergence) is an oscillator study and is widely used for assessment of trending characteristics of a given security. It is calculated as the difference between two price averages, and is a indicator that provides a signal line which average of that difference. Interaction of the MACD plot and the signal line often produce valuable signals for trend analysis.    
 
-   When the MACD plot goes above the signal line, an uptrend may be expected, and, when it goes below, a downtrend can be seen. The difference between the MACD and signal values is plotted as a histogram, which may sometimes give you an early sign that a crossover is about to happen.    
-
-   This relation between two can help in determining if stock/security can be 
-bought or not. The plot shows a trend between the signal and MACD value for our companies keeping histogram as base. Slight interaction between value and signal can be seen in the data at some points. As the data is limited only few points have been captured for companies. For given data crossover trend can clearly be seen for Microsoft and Weyerhaeuser.
-
-### Line Plots of MACD by Company
-
-```{r macd_df}
-
-g <- ggplot(data =macd_df, aes(x=histogram))
-g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
-
-```
-
+   When the MACD plot goes above the signal line, an uptrend may be expected, and, when it goes below, a downtrend can be seen. The difference between the MACD and signal values is plotted as a histogram, which may sometimes give you an early sign that a crossover is about to happen.This relation between two can help in determining if stock/security can be 
+bought or not. 
 
 ### Summary of MACD by Company
 
@@ -694,6 +682,16 @@ kable(output$macd_df_avg, caption = "Average of MACD variables by Company")
 
 ```
 
+### Line Plots of MACD by Company
+
+The plot shows a trend between the signal and MACD value for our companies keeping histogram as base. Slight interaction between value and signal can be seen in the data at some points. As the data is limited only few points have been captured for companies. For given data crossover trend can clearly be seen for Microsoft and Weyerhaeuser.
+
+```{r macd_df}
+
+g <- ggplot(data =macd_df, aes(x=histogram))
+g + geom_line(aes(y=value),color="red")+geom_line(aes(y=signal),color="blue") + facet_wrap(~Company_Name,scales = "free")+guides(x = guide_axis(angle = 90))+ labs(x= "Signal", y= "Value",title=" Signal vs Value")+scale_fill_discrete(name = "Company Name ")
+
+```
 
 # Conclusion
 
