@@ -571,7 +571,7 @@ kable(output$tab_cate2)
 
 The graphs below show the dispersion of the average price through density, histograms, and boxplots by each level of market type and ticker type.   
   
-  In the first density plot, Average price has been derived from the data and has been used to check for some trends. The OTC has average prices smaller than the tickers from Stock market, which was expected since in previous analyzes we came to a conclusion that the Stock market is more common than OTC and, because of that, they are more likely to return more gains.
+  In the density plot below, Average price has been derived from the data and has been used to check for some trends. The OTC has average prices smaller than the tickers from Stock market, which was expected since in previous analyzes we came to a conclusion that the Stock market is more common than OTC and, because of that, they are more likely to return more gains.
   
 
 ```{r df_price}
@@ -595,7 +595,7 @@ h + geom_histogram(aes(fill = type, y = ..density..), position = "stack") +
 
 ```
 
-The boxplot below summarizes the spread of average price for the two type of markets. OTC markets has lowest values of average price compared to Stock, however both seem to show the same spread. Stock market shows some possible outliers, which might indicate that some extra variation to the data.
+The boxplot below summarizes the spread of average price for the two type of markets. OTC markets has lowest values of average price compared to Stock, however OTC shows to be less spread than Stock. Stock market shows some possible outliers, which might indicate that some extra variation to the data.
 
 ```{r}
 
@@ -604,7 +604,7 @@ h + geom_boxplot(aes(y = market,fill=market)) + coord_flip()+ labs(x = "Average 
 
 ```
 
-The boxplot below captures average price in terms of the ticker type with ADRC types having broader average price share in the given time period in contract with the other ticker types that show almost no variation, except for Cs, which present a possible outlier and this might indicate some extra variation to the data for other time periods.
+The boxplot below captures average price in terms of the ticker type with ADRC types having broader average price share in the given time period in contract with the other ticker types that show almost no variation, except for CS, which present a possible outlier and this might indicate some extra variation to the data for other time periods.
 
 ```{r}
 
